@@ -15,6 +15,9 @@ public:
     explicit InstallWindow(QString kenshiExePath, QWidget *parent = nullptr);
     ~InstallWindow();
 
+private slots:
+    void on_closeButton_clicked();
+
 private:
     Ui::InstallWindow *ui;
     void handleError(QString error);

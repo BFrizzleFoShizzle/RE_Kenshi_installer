@@ -115,3 +115,8 @@ InstallWindow::~InstallWindow()
 {
     delete ui;
 }
+
+void InstallWindow::on_closeButton_clicked()
+{
+    this->close();
+}
