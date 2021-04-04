@@ -22,8 +22,14 @@ private slots:
 
     void on_kenshiDirText_textChanged(const QString &arg1);
 
+    // install methods
     void handleExeHash(QString hash);
     void handleError(QString hash);
+
+    // uninstall methods
+    void handleBackupHash(QString hash);
+    void handleUninstallFinish();
+    void on_uninstallButton_clicked();
 
 private:
     Ui::MainWindow *ui;

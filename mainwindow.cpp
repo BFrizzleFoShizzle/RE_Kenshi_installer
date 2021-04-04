@@ -1,9 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
+#include <QMessageBox>
 #include <fstream>
 
 #include "hashthread.h"
+#include "copythread.h"
 
 #include "installwindow.h"
 
@@ -35,6 +37,8 @@ void MainWindow::on_nextButton_clicked()
 
 void MainWindow::on_kenshiDirText_textChanged(const QString &arg1)
 {
+    ui->uninstallButton->setEnabled(false);
+    ui->nextButton->setEnabled(false);
     std::ifstream kenshiExe(arg1.toStdString(), std::ios::ate | std::ios::binary);
     if(kenshiExe.is_open())
     {
@@ -51,7 +55,6 @@ void MainWindow::on_kenshiDirText_textChanged(const QString &arg1)
     else
     {
         ui->outputLabel->setText("Please select kenshi executable.");
-        ui->nextButton->setEnabled(false);
     }
 }
 
@@ -68,17 +71,68 @@ void MainWindow::handleExeHash(QString hash)
     {
         ui->outputLabel->setText("Hash matches. Continue...");
         ui->nextButton->setEnabled(true);
+        ui->uninstallButton->setEnabled(false);
     }
     else if(hash.toStdString() == moddedKenshiHash)
     {
         ui->outputLabel->setText("Mod is already enabled.");
         ui->nextButton->setEnabled(false);
+        ui->uninstallButton->setEnabled(true);
     }
     else
     {
         ui->outputLabel->setText("Hash " + hash + " does not match. This mod is only compatible with Kenshi 1.0.51 x64 (Steam).");
         ui->nextButton->setEnabled(false);
+        ui->uninstallButton->setEnabled(false);
     }
     ui->kenshiDirButton->setEnabled(true);
     ui->kenshiDirText->setEnabled(true);
+}
+
+void MainWindow::on_uninstallButton_clicked()
+{
+    ui->kenshiDirButton->setEnabled(false);
+    ui->kenshiDirText->setEnabled(false);
+    ui->nextButton->setEnabled(false);
+    ui->uninstallButton->setEnabled(false);
+    QString kenshiLocation = ui->kenshiDirText->text();
+    QMessageBox *confirmBox = new QMessageBox(this);
+    confirmBox->setText("Are you sure you wish to uninstall RE_Kenshi?");
+    confirmBox->addButton("Confirm", QMessageBox::ButtonRole::AcceptRole);
+    confirmBox->addButton("Cancel", QMessageBox::ButtonRole::RejectRole);
+    if(confirmBox->exec() == QMessageBox::ButtonRole::AcceptRole)
+    {
+        ui->outputLabel->setText("Checking backup hash...");
+        QString kenshiLocation = ui->kenshiDirText->text();
+        QString kenshiDir = kenshiLocation.split("kenshi_x64.exe")[0];
+        std::string unmoddedExePath = kenshiDir.toStdString() + "kenshi_x64_vanilla.exe";
+        HashThread *backupHashThread = new HashThread(unmoddedExePath, this);
+        connect(backupHashThread, &HashThread::resultError, this, &MainWindow::handleError);
+        connect(backupHashThread, &HashThread::resultSuccess, this, &MainWindow::handleBackupHash);
+        backupHashThread->start();
+    }
+}
+
+void MainWindow::handleBackupHash(QString hash)
+{
+    if(hash.toStdString() == vanillaKenshiHash)
+    {
+        ui->outputLabel->setText("Hash matches. Continue...");
+        QString kenshiLocation = ui->kenshiDirText->text();
+        QString kenshiDir = kenshiLocation.split("kenshi_x64.exe")[0];
+        std::string unmoddedExePath = kenshiDir.toStdString() + "kenshi_x64_vanilla.exe";
+        CopyThread *backupCopy = new CopyThread(unmoddedExePath, kenshiLocation.toStdString(), this);
+        connect(backupCopy, &CopyThread::resultError, this, &MainWindow::handleError);
+        connect(backupCopy, &CopyThread::resultSuccess, this, &MainWindow::handleUninstallFinish);
+        backupCopy->start();
+    }
+    else
+    {
+        ui->outputLabel->setText("Backup has incorrect hash... What?!? I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" to fix whatever I've done... :(");
+    }
+}
+
+void MainWindow::handleUninstallFinish()
+{
+    ui->outputLabel->setText("RE_Kenshi successfully uninstalled.");
 }
