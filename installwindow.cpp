@@ -43,6 +43,7 @@ void InstallWindow::handleExeHash(QString hash)
         connect(exeBackupThread, &CopyThread::resultError, this, &InstallWindow::handleError);
         connect(exeBackupThread, &CopyThread::resultSuccess, this, &InstallWindow::handleBackupCopySuccess);
         exeBackupThread->start();
+        ui->progressBar->setValue(20);
     }
 }
 
@@ -55,6 +56,7 @@ void InstallWindow::handleBackupCopySuccess()
     connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
     connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleDLLCopySuccess);
     modCopyThread->start();
+    ui->progressBar->setValue(40);
 }
 
 void InstallWindow::handleDLLCopySuccess()
@@ -68,6 +70,7 @@ void InstallWindow::handleDLLCopySuccess()
     connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleExeModSuccess);
     kenshiModThread->start();
     ui->label->setText(QString::fromStdString(command));
+    ui->progressBar->setValue(60);
 }
 
 void InstallWindow::handleExeModSuccess()
@@ -79,6 +82,7 @@ void InstallWindow::handleExeModSuccess()
     connect(modExeOverwriteThread, &CopyThread::resultError, this, &InstallWindow::handleError);
     connect(modExeOverwriteThread, &CopyThread::resultSuccess, this, &InstallWindow::handleExeOverwriteSuccess);
     modExeOverwriteThread->start();
+    ui->progressBar->setValue(80);
 }
 
 void InstallWindow::handleExeOverwriteSuccess()
@@ -90,6 +94,7 @@ void InstallWindow::handleExeOverwriteSuccess()
     else
     {
         ui->label->setText("RE_Kenshi has installed successfully!");
+        ui->progressBar->setValue(100);
     }
     ui->closeButton->setEnabled(true);
 }
