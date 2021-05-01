@@ -3,8 +3,9 @@
 
 #include <QThread>
 
-const std::string moddedKenshiHash = "a5f78908f3f26591a6a3717bfbfafbca";
-const std::string vanillaKenshiHash = "57679de0ae258ead45a96949974517e2";
+const std::string moddedKenshiSteamHash = "a5f78908f3f26591a6a3717bfbfafbca";
+const std::string vanillaKenshiSteamHash = "57679de0ae258ead45a96949974517e2";
+const std::string vanillaKenshiGOGHash = "525261fca4d339da67999c114118c6c6";
 
 class HashThread : public QThread
 {

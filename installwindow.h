@@ -25,8 +25,7 @@ private:
     void handleExeHash(QString hash);
     void handleBackupCopySuccess();
     void handleDLLCopySuccess();
-    void handleExeModSuccess();
-    void handleExeOverwriteSuccess();
+    void handleConfigAppendSuccess();
     QString kenshiExePath;
     bool error;
 };

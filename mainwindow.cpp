@@ -24,7 +24,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_kenshiDirButton_clicked()
 {
-    QString kenshiBinLoc = QFileDialog::getOpenFileName(this, "Select Kenshi executable:", "", "kenshi_x64.exe");
+    QString kenshiBinLoc = QFileDialog::getOpenFileName(this, "Select Kenshi executable:", "", "Kenshi executable (kenshi_x64.exe;kenshi_GOG_x64.exe)");
     ui->kenshiDirText->setText(kenshiBinLoc);
 }
 
@@ -67,21 +67,17 @@ void MainWindow::handleError(QString error)
 
 void MainWindow::handleExeHash(QString hash)
 {
-    if(hash.toStdString() == vanillaKenshiHash)
+    if(hash.toStdString() == vanillaKenshiGOGHash
+            || hash.toStdString() == vanillaKenshiSteamHash
+            || hash.toStdString() == moddedKenshiSteamHash)
     {
-        ui->outputLabel->setText("Hash matches. Continue...");
+        ui->outputLabel->setText("Game hash matches. Continue...");
         ui->nextButton->setEnabled(true);
         ui->uninstallButton->setEnabled(false);
     }
-    else if(hash.toStdString() == moddedKenshiHash)
-    {
-        ui->outputLabel->setText("Mod is already enabled.");
-        ui->nextButton->setEnabled(false);
-        ui->uninstallButton->setEnabled(true);
-    }
     else
     {
-        ui->outputLabel->setText("Hash " + hash + " does not match. This mod is only compatible with Kenshi 1.0.51 x64 (Steam).");
+        ui->outputLabel->setText("Hash " + hash + " does not match. This mod is only compatible with Kenshi 1.0.51 x64 (Steam/GOG).");
         ui->nextButton->setEnabled(false);
         ui->uninstallButton->setEnabled(false);
     }
@@ -103,6 +99,7 @@ void MainWindow::on_uninstallButton_clicked()
     if(confirmBox->exec() == QMessageBox::ButtonRole::AcceptRole)
     {
         ui->outputLabel->setText("Checking backup hash...");
+        /*
         QString kenshiLocation = ui->kenshiDirText->text();
         QString kenshiDir = kenshiLocation.split("kenshi_x64.exe")[0];
         std::string unmoddedExePath = kenshiDir.toStdString() + "kenshi_x64_vanilla.exe";
@@ -110,11 +107,14 @@ void MainWindow::on_uninstallButton_clicked()
         connect(backupHashThread, &HashThread::resultError, this, &MainWindow::handleError);
         connect(backupHashThread, &HashThread::resultSuccess, this, &MainWindow::handleBackupHash);
         backupHashThread->start();
+        */
     }
 }
 
 void MainWindow::handleBackupHash(QString hash)
 {
+    // TODO
+    /*
     if(hash.toStdString() == vanillaKenshiHash)
     {
         ui->outputLabel->setText("Hash matches. Continue...");
@@ -130,6 +130,7 @@ void MainWindow::handleBackupHash(QString hash)
     {
         ui->outputLabel->setText("Backup has incorrect hash... What?!? I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" to fix whatever I've done... :(");
     }
+    */
 }
 
 void MainWindow::handleUninstallFinish()

@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <fstream>
 
 #include "installwindow.h"
 #include "ui_installwindow.h"
@@ -27,29 +28,44 @@ InstallWindow::InstallWindow(QString kenshiExePath, QWidget *parent) :
 
 void InstallWindow::handleExeHash(QString hash)
 {
-    if(hash.toStdString() != vanillaKenshiHash)
+    if(hash.toStdString() == moddedKenshiSteamHash)
     {
-        ui->label->setText("Hash doesn't match! This shoudln't be possible! No files changed, aborted. Mod not installed. It is now safe to close this window.");
-        ui->progressBar->setValue(100);
-        return;
+        // undo EXE modifications
+        ui->label->setText("Hash matches. Uninstalling old RE_Kenshi modifications...");
+        // TODO
+    }
+    else if(hash.toStdString() == vanillaKenshiSteamHash || hash.toStdString() == vanillaKenshiGOGHash)
+    {
+        ui->label->setText("Hash matches. Making kenshi plugin config backup...");
+        QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+        std::string pluginsConfigPath = kenshiDir.toStdString() + "Plugins_x64.cfg";
+        std::string pluginsConfigBackupPath = kenshiDir.toStdString() + "Plugins_x64_vanilla.cfg";
+        std::ifstream configBackupFile(pluginsConfigBackupPath);
+        if(configBackupFile.is_open())
+        {
+            ui->label->setText("Plugin config already backed up, skipping...");
+            handleBackupCopySuccess();
+        }
+        else
+        {
+            CopyThread *exeBackupThread = new CopyThread(pluginsConfigPath, pluginsConfigBackupPath, this);
+            connect(exeBackupThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+            connect(exeBackupThread, &CopyThread::resultSuccess, this, &InstallWindow::handleBackupCopySuccess);
+            exeBackupThread->start();
+            ui->progressBar->setValue(20);
+        }
     }
     else
     {
-        ui->label->setText("Hash matches. Making kenshi EXE backup...");
-        QString kenshiDir = kenshiExePath.split("kenshi_x64.exe")[0];
-        std::string exeBackupPath = kenshiDir.toStdString() + "kenshi_x64_vanilla.exe";
-
-        CopyThread *exeBackupThread = new CopyThread(kenshiExePath.toStdString(), exeBackupPath, this);
-        connect(exeBackupThread, &CopyThread::resultError, this, &InstallWindow::handleError);
-        connect(exeBackupThread, &CopyThread::resultSuccess, this, &InstallWindow::handleBackupCopySuccess);
-        exeBackupThread->start();
-        ui->progressBar->setValue(20);
+        ui->label->setText("Hash doesn't match! This shouldn't be possible! No files changed, aborted. Mod not installed. It is now safe to close this window.");
+        ui->progressBar->setValue(100);
+        return;
     }
 }
 
 void InstallWindow::handleBackupCopySuccess()
 {
-    QString kenshiDir = kenshiExePath.split("kenshi_x64.exe")[0];
+    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
     std::string dllWritePath = kenshiDir.toStdString() + "RE_Kenshi.dll";
     ui->label->setText("Copying mod files...");
     CopyThread *modCopyThread = new CopyThread("RE_Kenshi.dll", dllWritePath, this);
@@ -61,35 +77,25 @@ void InstallWindow::handleBackupCopySuccess()
 
 void InstallWindow::handleDLLCopySuccess()
 {
-    ui->label->setText("Modifying kenshi .exe");
-    QString kenshiDir = kenshiExePath.split("kenshi_x64.exe")[0];
-    std::string exeWritePath = kenshiDir.toStdString() + "kenshi_x64_modded.exe";
-    std::string command = "bspatch \"" + kenshiExePath.toStdString() + "\" \"" + exeWritePath + "\" kenshi.patch";
+    ui->label->setText("Adding RE_Kenshi to plugin config file...");
+    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+    std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
+    std::string pluginLoadStr = "Plugin=RE_Kenshi";
+    std::string command = "find /c \"" + pluginLoadStr + "\" \"" + configWritePath + "\" >NUL || (echo. >> \"" + configWritePath + "\") && (echo " + pluginLoadStr + " >> \"" + configWritePath + "\")";
+    ui->label->setText(command.c_str());
     ShellThread *kenshiModThread = new ShellThread(command);
     connect(kenshiModThread, &ShellThread::resultError, this, &InstallWindow::handleShellError);
-    connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleExeModSuccess);
+    connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleConfigAppendSuccess);
     kenshiModThread->start();
     ui->label->setText(QString::fromStdString(command));
     ui->progressBar->setValue(60);
 }
 
-void InstallWindow::handleExeModSuccess()
-{
-    ui->label->setText("Replacing old EXE with modified EXE...");
-    QString kenshiDir = kenshiExePath.split("kenshi_x64.exe")[0];
-    std::string moddedExePath = kenshiDir.toStdString() + "kenshi_x64_modded.exe";
-    CopyThread *modExeOverwriteThread = new CopyThread(moddedExePath, kenshiExePath.toStdString(), this);
-    connect(modExeOverwriteThread, &CopyThread::resultError, this, &InstallWindow::handleError);
-    connect(modExeOverwriteThread, &CopyThread::resultSuccess, this, &InstallWindow::handleExeOverwriteSuccess);
-    modExeOverwriteThread->start();
-    ui->progressBar->setValue(80);
-}
-
-void InstallWindow::handleExeOverwriteSuccess()
+void InstallWindow::handleConfigAppendSuccess()
 {
     if(error)
     {
-        ui->label->setText("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" to fix whatever I've done... :(");
+        ui->label->setText("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" and \"Plugins_x64_vanilla.cfg\" to \"Plugins_x64.cfg\" to fix whatever I've done... :(");
     }
     else
     {
