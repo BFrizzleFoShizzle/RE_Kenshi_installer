@@ -113,7 +113,6 @@ void UninstallWindow::handleFilesRestored()
     connect(dllDeleteThread, &ShellThread::resultSuccess, this, &UninstallWindow::handleDLLDeleteSuccess);
     dllDeleteThread->start();
     ui->progressBar->setValue(60);
-    ui->label->setText(command.c_str());
 }
 
 void UninstallWindow::handleDLLDeleteSuccess()

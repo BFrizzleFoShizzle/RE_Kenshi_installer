@@ -82,12 +82,10 @@ void InstallWindow::handleDLLCopySuccess()
     std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
     std::string pluginLoadStr = "Plugin=RE_Kenshi";
     std::string command = "find /c \"" + pluginLoadStr + "\" \"" + configWritePath + "\" >NUL || (echo. >> \"" + configWritePath + "\") && (echo " + pluginLoadStr + " >> \"" + configWritePath + "\")";
-    ui->label->setText(command.c_str());
     ShellThread *kenshiModThread = new ShellThread(command);
     connect(kenshiModThread, &ShellThread::resultError, this, &InstallWindow::handleShellError);
     connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleConfigAppendSuccess);
     kenshiModThread->start();
-    ui->label->setText(QString::fromStdString(command));
     ui->progressBar->setValue(60);
 }
 
