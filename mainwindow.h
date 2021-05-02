@@ -12,6 +12,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    enum InstallerAction
+    {
+        UNINSTALL, // uninstall any previous version
+        UPGRADE, // upgrade from previous version
+        INSTALL // fresh install
+    };
+
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -27,8 +34,6 @@ private slots:
     void handleError(QString hash);
 
     // uninstall methods
-    void handleBackupHash(QString hash);
-    void handleUninstallFinish();
     void on_uninstallButton_clicked();
 
 private:

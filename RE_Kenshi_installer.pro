@@ -15,7 +15,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     md5.cpp \
-    shellthread.cpp
+    shellthread.cpp \
+    uninstallwindow.cpp
 
 HEADERS += \
     copythread.h \
@@ -24,7 +25,8 @@ HEADERS += \
     mainwindow.h \
     md5.h \
     md5_loc.h \
-    shellthread.h
+    shellthread.h \
+    uninstallwindow.h
 
 FORMS += \
     installwindow.ui \
