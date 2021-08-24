@@ -10,27 +10,33 @@ CONFIG += c++11
 
 SOURCES += \
     copythread.cpp \
+    diskutil.cpp \
     hashthread.cpp \
     installwindow.cpp \
     main.cpp \
     mainwindow.cpp \
     md5.cpp \
+    optionswindow.cpp \
     shellthread.cpp \
     uninstallwindow.cpp
 
 HEADERS += \
+    Release_Assert.h \
     copythread.h \
+    diskutil.h \
     hashthread.h \
     installwindow.h \
     mainwindow.h \
     md5.h \
     md5_loc.h \
+    optionswindow.h \
     shellthread.h \
     uninstallwindow.h
 
 FORMS += \
     installwindow.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    optionswindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

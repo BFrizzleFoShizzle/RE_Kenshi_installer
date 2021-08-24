@@ -6,9 +6,11 @@
 
 #include "hashthread.h"
 #include "copythread.h"
+#include "diskutil.h"
 
-#include "installwindow.h"
+#include "optionswindow.h"
 #include "uninstallwindow.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,20 +34,26 @@ void MainWindow::on_kenshiDirButton_clicked()
 void MainWindow::on_nextButton_clicked()
 {
     // HACK if uninstall button is active, previous version is installed, so we're doing an upgrade
-    if(ui->uninstallButton->isEnabled())
-    {
-        // upgrade
-        this->hide();
-        UninstallWindow* uninstallWindow = new UninstallWindow(ui->kenshiDirText->text(), InstallerAction::UPGRADE);
-        uninstallWindow->show();
-    }
-    else
-    {
-        // regular install
-        this->hide();
-        InstallWindow* installWindow = new InstallWindow(ui->kenshiDirText->text());
-        installWindow->show();
-    }
+    InstallerAction action = ui->uninstallButton->isEnabled() ? InstallerAction::UPGRADE : InstallerAction::INSTALL;
+
+    // Checking if on HDD takes a while, so disable UI so nothing goes wrong
+    // This is slightly nicer than closing the window (user can see stuff is still happening)
+    bool oldUninstallEnabled = ui->uninstallButton->isEnabled();
+    setEnabled(false);
+    QString labelText = ui->outputLabel->text();
+    ui->outputLabel->setText(labelText + "\nProcessing...");
+    repaint();
+
+    std::string kenshiExePath = ui->kenshiDirText->text().toStdString();
+    bool installToHDD = DiskUtil::IsOnHDD(kenshiExePath);
+
+    this->hide();
+    OptionsWindow* nextWindow = new OptionsWindow(ui->kenshiDirText->text(), this, installToHDD, action);
+    nextWindow->show();
+
+    // Re-enable UI in case user goes back to this window
+    setEnabled(true);
+    ui->outputLabel->setText(labelText);
 }
 
 void MainWindow::on_kenshiDirText_textChanged(const QString &arg1)
@@ -82,7 +90,7 @@ void MainWindow::handleError(QString error)
 bool IsModInstalled(QString kenshiEXEHash, QString kenshiEXEPath)
 {
     // if EXE is modded, mod is already installed :)
-    if(kenshiEXEHash.toStdString() == moddedKenshiSteamHash)
+    if(HashThread::HashIsModded(kenshiEXEHash.toStdString()))
         return true;
 
     // if backup file + DLL exists, mod is installed
@@ -102,9 +110,7 @@ bool IsModInstalled(QString kenshiEXEHash, QString kenshiEXEPath)
 
 void MainWindow::handleExeHash(QString hash)
 {
-    if(hash.toStdString() == vanillaKenshiGOGHash
-            || hash.toStdString() == vanillaKenshiSteamHash
-            || hash.toStdString() == moddedKenshiSteamHash)
+    if(HashThread::HashSupported(hash.toStdString()))
     {
         ui->outputLabel->setText("Game hash matches. Continue...");
         ui->nextButton->setEnabled(true);

@@ -8,7 +8,28 @@
 #include "hashthread.h"
 #include "shellthread.h"
 
-InstallWindow::InstallWindow(QString kenshiExePath, QWidget *parent) :
+enum InstallStep
+{
+    HASH_CHECK,
+    BACKUP_COPY,
+    MAIN_COPY,
+    SECONDARY_COPY,
+    COMPRESS,
+    // hack to make compression take most of the bar
+    COMPRESS_2,
+    COMPRESS_3,
+    COMPRESS_4,
+    COMPRESS_5,
+    CONFIG_APPEND,
+    DONE
+};
+
+int GetInstallPercent(InstallStep step)
+{
+    return (100 * step) / InstallStep::DONE;
+}
+
+InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::InstallWindow)
 {
@@ -17,6 +38,7 @@ InstallWindow::InstallWindow(QString kenshiExePath, QWidget *parent) :
     error = false;
 
     this->kenshiExePath = kenshiExePath;
+    this->compressHeightmap = compressHeightmap;
 
     ui->label->setText("Double-checking hash...");
 
@@ -28,13 +50,13 @@ InstallWindow::InstallWindow(QString kenshiExePath, QWidget *parent) :
 
 void InstallWindow::handleExeHash(QString hash)
 {
-    if(hash.toStdString() == moddedKenshiSteamHash)
+    if(HashThread::HashIsModded(hash.toStdString()))
     {
         // undo EXE modifications
         ui->label->setText("Hash matches. Uninstalling old RE_Kenshi modifications...");
         // TODO
     }
-    else if(hash.toStdString() == vanillaKenshiSteamHash || hash.toStdString() == vanillaKenshiGOGHash)
+    else if(HashThread::HashSupported(hash.toStdString()))
     {
         ui->label->setText("Hash matches. Making kenshi plugin config backup...");
         QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
@@ -52,13 +74,13 @@ void InstallWindow::handleExeHash(QString hash)
             connect(exeBackupThread, &CopyThread::resultError, this, &InstallWindow::handleError);
             connect(exeBackupThread, &CopyThread::resultSuccess, this, &InstallWindow::handleBackupCopySuccess);
             exeBackupThread->start();
-            ui->progressBar->setValue(20);
+            ui->progressBar->setValue(GetInstallPercent(BACKUP_COPY));
         }
     }
     else
     {
         ui->label->setText("Hash doesn't match! This shouldn't be possible! No files changed, aborted. Mod not installed. It is now safe to close this window.");
-        ui->progressBar->setValue(100);
+        ui->progressBar->setValue(GetInstallPercent(DONE));
         return;
     }
 }
@@ -68,15 +90,59 @@ void InstallWindow::handleBackupCopySuccess()
     QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
     std::string dllWritePath = kenshiDir.toStdString() + "RE_Kenshi.dll";
     ui->label->setText("Copying mod files...");
-    CopyThread *modCopyThread = new CopyThread("RE_Kenshi.dll", dllWritePath, this);
+    CopyThread *modCopyThread = new CopyThread("tools/RE_Kenshi.dll", dllWritePath, this);
     connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
-    connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleDLLCopySuccess);
+    connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleMainDLLCopySuccess);
     modCopyThread->start();
-    ui->progressBar->setValue(40);
+    ui->progressBar->setValue(GetInstallPercent(MAIN_COPY));
 }
 
-void InstallWindow::handleDLLCopySuccess()
+void InstallWindow::handleMainDLLCopySuccess()
 {
+    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+    std::string dllWritePath = kenshiDir.toStdString() + "CompressToolsLib.dll";
+    CopyThread *modCopyThread = new CopyThread("tools/CompressToolsLib.dll", dllWritePath, this);
+    connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+    connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleSecondaryDLLCopySuccess);
+    modCopyThread->start();
+    ui->progressBar->setValue(GetInstallPercent(SECONDARY_COPY));
+}
+
+void InstallWindow::handleSecondaryDLLCopySuccess()
+{
+    if(compressHeightmap)
+    {
+        // TODO refactor - this is in two places
+        ui->label->setText("Compressing heightmap, this may take a minute or two...");
+        QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+        std::string heightmapReadPath = kenshiDir.toStdString() + "data/newland/land/fullmap.tif";
+        std::string heightmapWritePath = kenshiDir.toStdString() + "data/newland/land/fullmap.cif";
+        std::string command = "tools\\CompressTools.exe \"" + heightmapReadPath + "\" \"" + heightmapWritePath + "\"";
+        ShellThread *kenshiModThread = new ShellThread(command);
+        connect(kenshiModThread, &ShellThread::resultError, this, &InstallWindow::handleShellError);
+        connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleHeightmapCompressSuccess);
+        kenshiModThread->start();
+        ui->progressBar->setValue(GetInstallPercent(COMPRESS));
+    }
+    else
+    {
+        // TODO refactor - this is in two places
+        ui->label->setText("Adding RE_Kenshi to plugin config file...");
+        QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+        std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
+        std::string pluginLoadStr = "Plugin=RE_Kenshi";
+        std::string command = "find /c \"" + pluginLoadStr + "\" \"" + configWritePath + "\" >NUL || (echo. >> \"" + configWritePath + "\") && (echo " + pluginLoadStr + " >> \"" + configWritePath + "\")";
+        ShellThread *kenshiModThread = new ShellThread(command);
+        connect(kenshiModThread, &ShellThread::resultError, this, &InstallWindow::handleShellError);
+        connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleConfigAppendSuccess);
+        kenshiModThread->start();
+        ui->progressBar->setValue(GetInstallPercent(CONFIG_APPEND));
+    }
+}
+
+void InstallWindow::handleHeightmapCompressSuccess()
+{
+    // TODO refactor - this is in two places
     ui->label->setText("Adding RE_Kenshi to plugin config file...");
     QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
     std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
@@ -86,8 +152,9 @@ void InstallWindow::handleDLLCopySuccess()
     connect(kenshiModThread, &ShellThread::resultError, this, &InstallWindow::handleShellError);
     connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleConfigAppendSuccess);
     kenshiModThread->start();
-    ui->progressBar->setValue(60);
+    ui->progressBar->setValue(GetInstallPercent(CONFIG_APPEND));
 }
+
 
 void InstallWindow::handleConfigAppendSuccess()
 {
@@ -98,7 +165,7 @@ void InstallWindow::handleConfigAppendSuccess()
     else
     {
         ui->label->setText("RE_Kenshi has installed successfully!");
-        ui->progressBar->setValue(100);
+        ui->progressBar->setValue(GetInstallPercent(DONE));
     }
     ui->closeButton->setEnabled(true);
 }
