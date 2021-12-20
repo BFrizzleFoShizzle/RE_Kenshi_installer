@@ -1,5 +1,8 @@
 #include <windows.h>
 #include <fstream>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include "installwindow.h"
 #include "ui_installwindow.h"
@@ -14,6 +17,7 @@ enum InstallStep
     BACKUP_COPY,
     MAIN_COPY,
     SECONDARY_COPY,
+    MOD_SETTINGS_UPDATE,
     COMPRESS,
     // hack to make compression take most of the bar
     COMPRESS_2,
@@ -29,7 +33,7 @@ int GetInstallPercent(InstallStep step)
     return (100 * step) / InstallStep::DONE;
 }
 
-InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, QWidget *parent) :
+InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, bool checkUpdates, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::InstallWindow)
 {
@@ -39,6 +43,7 @@ InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, QWid
 
     this->kenshiExePath = kenshiExePath;
     this->compressHeightmap = compressHeightmap;
+    this->checkUpdates = checkUpdates;
 
     ui->label->setText("Double-checking hash...");
 
@@ -109,6 +114,27 @@ void InstallWindow::handleMainDLLCopySuccess()
 }
 
 void InstallWindow::handleSecondaryDLLCopySuccess()
+{
+    // no threading + GUI update on this once since it's fast
+    ui->label->setText("Updating mod config...");
+    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+    QFile modConfigFile(kenshiDir + "RE_Kenshi.ini");
+    modConfigFile.open(QFile::ReadOnly);
+    QJsonDocument jsonDoc = QJsonDocument().fromJson(modConfigFile.readAll());
+    modConfigFile.close();
+    QJsonObject jsonObj = jsonDoc.object();
+    jsonObj.insert("CheckUpdates", checkUpdates);
+    jsonDoc.setObject(jsonObj);
+    modConfigFile.open(QFile::WriteOnly);
+    modConfigFile.write(jsonDoc.toJson());
+    modConfigFile.close();
+
+    ui->progressBar->setValue(GetInstallPercent(SECONDARY_COPY));
+    // Go straight into the next block
+    handleModSettingsUpdateSuccess();
+}
+
+void InstallWindow::handleModSettingsUpdateSuccess()
 {
     if(compressHeightmap)
     {

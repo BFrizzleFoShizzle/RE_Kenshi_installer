@@ -13,7 +13,7 @@ class UninstallWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit UninstallWindow(QString kenshiExePath, MainWindow::InstallerAction action, bool compressHeightmap = false, QWidget *parent = nullptr);
+    explicit UninstallWindow(QString kenshiExePath, MainWindow::InstallerAction action, bool compressHeightmap = false, bool checkUpdates = false, QWidget *parent = nullptr);
     ~UninstallWindow();
 
 private slots:
@@ -33,6 +33,7 @@ private:
     bool error;
     MainWindow::InstallerAction action;
     bool compressHeightmap;
+    bool checkUpdates;
 };
 
 #endif // UNINSTALLWINDOW_H

@@ -12,7 +12,8 @@ const std::string moddedKenshiSteamHash = "a5f78908f3f26591a6a3717bfbfafbca";
 const std::string vanillaKenshiHashes[] = {
     "57679de0ae258ead45a96949974517e2", // Steam 1.0.51
     "525261fca4d339da67999c114118c6c6", // GOG 1.0.51
-    "83ea507cf9667bfe8de2d8a64e9ea57a" // Steam 1.0.55
+    "83ea507cf9667bfe8de2d8a64e9ea57a", // Steam 1.0.55
+    "e737c0e734ea02fa3a714539bbb0c373"  // GOG 1.0.55
 };
 
 bool HashThread::HashSupported(std::string hash)
