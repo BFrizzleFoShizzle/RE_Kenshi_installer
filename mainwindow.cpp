@@ -123,7 +123,7 @@ void MainWindow::handleExeHash(QString hash)
     }
     else
     {
-        ui->outputLabel->setText("Hash " + hash + " does not match. This mod is only compatible with Kenshi 1.0.51, 1.0.55, 1.0.59 x64 (Steam/GOG).");
+        ui->outputLabel->setText("Hash " + hash + " does not match. This mod is only compatible with Kenshi 1.0.55, 1.0.59 (Steam) and 1.0.59 (GOG).");
         ui->nextButton->setEnabled(false);
         ui->uninstallButton->setEnabled(false);
     }
