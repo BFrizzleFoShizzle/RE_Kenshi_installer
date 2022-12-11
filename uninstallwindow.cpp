@@ -27,11 +27,13 @@ int GetUninstallPercent(UninstallStep step)
     return (100 * step) / UninstallStep::DONE;
 }
 
-UninstallWindow::UninstallWindow(QString kenshiExePath, MainWindow::InstallerAction action, bool compressHeightmap, bool checkUpdates, QWidget *parent)
+UninstallWindow::UninstallWindow(QString kenshiExePath, MainWindow::InstallerAction action, bool compressHeightmap, bool checkUpdates,
+                                 bool clearSkippedVersions, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::InstallWindow)
     , compressHeightmap(compressHeightmap)
     , checkUpdates(checkUpdates)
+    , clearSkippedVersions(clearSkippedVersions)
 {
     ui->setupUi(this);
 
@@ -194,7 +196,7 @@ void UninstallWindow::handleCompressedHeightmapDeleteSuccess()
         {
             // successfully uninstalled previous version, run installer to install new version
             this->hide();
-            InstallWindow* nextWindow = new InstallWindow(kenshiExePath, compressHeightmap, checkUpdates, nullptr);
+            InstallWindow* nextWindow = new InstallWindow(kenshiExePath, compressHeightmap, checkUpdates, clearSkippedVersions, nullptr);
             nextWindow->show();
         }
     }

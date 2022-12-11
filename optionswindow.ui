@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>231</height>
+    <height>243</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>160</y>
+      <y>170</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -34,7 +34,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>80</y>
+      <y>90</y>
       <width>571</width>
       <height>91</height>
      </rect>
@@ -61,7 +61,7 @@ Heightmap compression significantly improves load times on HDDs and may improve 
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>160</y>
+      <y>170</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -99,6 +99,28 @@ Heightmap compression significantly improves load times on HDDs and may improve 
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QCheckBox" name="clearSkippedVersionsCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>231</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear skipped versions</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <zorder>outputLabel</zorder>
+   <zorder>nextButton</zorder>
+   <zorder>backButton</zorder>
+   <zorder>compressHeightmapCheckBox</zorder>
+   <zorder>checkUpdatesCheckBox</zorder>
+   <zorder>clearSkippedVersionsCheckBox</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

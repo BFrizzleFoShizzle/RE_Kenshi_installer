@@ -33,7 +33,8 @@ int GetInstallPercent(InstallStep step)
     return (100 * step) / InstallStep::DONE;
 }
 
-InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, bool checkUpdates, QWidget *parent) :
+InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, bool checkUpdates,
+                             bool clearSkippedVersions, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::InstallWindow)
 {
@@ -44,6 +45,7 @@ InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, bool
     this->kenshiExePath = kenshiExePath;
     this->compressHeightmap = compressHeightmap;
     this->checkUpdates = checkUpdates;
+    this->clearSkippedVersions = clearSkippedVersions;
 
     ui->label->setText("Double-checking hash...");
 
@@ -124,6 +126,9 @@ void InstallWindow::handleSecondaryDLLCopySuccess()
     modConfigFile.close();
     QJsonObject jsonObj = jsonDoc.object();
     jsonObj.insert("CheckUpdates", checkUpdates);
+    // clear skipped version
+    if(clearSkippedVersions)
+        jsonObj.insert("SkippedVersion", "");
     jsonDoc.setObject(jsonObj);
     modConfigFile.open(QFile::WriteOnly);
     modConfigFile.write(jsonDoc.toJson());
