@@ -26,6 +26,7 @@ private:
     void handleBackupCopySuccess();
     void handleMainDLLCopySuccess();
     void handleSecondaryDLLCopySuccess();
+    void handleTutorialImageCopySuccess();
     void handleModSettingsUpdateSuccess();
     void handleHeightmapCompressSuccess();
     void handleConfigAppendSuccess();

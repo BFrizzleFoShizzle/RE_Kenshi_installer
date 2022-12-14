@@ -28,6 +28,7 @@ private:
     void handleExeRestored();
     void handleMainDLLDeleteSuccess();
     void handleSecondaryDLLDeleteSuccess();
+    void handleTutorialImageDeleteSuccess();
     void handleCompressedHeightmapDeleteSuccess();
     QString kenshiExePath;
     bool error;

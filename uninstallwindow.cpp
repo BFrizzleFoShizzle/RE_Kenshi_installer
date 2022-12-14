@@ -18,6 +18,7 @@ enum UninstallStep
     RESTORE_EXE,
     DELETE_MAIN_DLL,
     DELETE_SECONDARY_DLL,
+    DELETE_TUT_IMAGE,
     DELETE_HEIGHTMAP,
     DONE
 };
@@ -134,7 +135,7 @@ void UninstallWindow::handleExeRestored()
     connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
     connect(dllDeleteThread, &ShellThread::resultSuccess, this, &UninstallWindow::handleMainDLLDeleteSuccess);
     dllDeleteThread->start();
-    ui->progressBar->setValue(GetUninstallPercent(DELETE_SECONDARY_DLL));
+    ui->progressBar->setValue(GetUninstallPercent(DELETE_MAIN_DLL));
 }
 
 void UninstallWindow::handleMainDLLDeleteSuccess()
@@ -149,8 +150,19 @@ void UninstallWindow::handleMainDLLDeleteSuccess()
     ui->progressBar->setValue(GetUninstallPercent(DELETE_SECONDARY_DLL));
 }
 
-
 void UninstallWindow::handleSecondaryDLLDeleteSuccess()
+{
+    ui->label->setText("Old files restored. Removing RE_Kenshi data...");
+    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+    std::string command = "del \"" + kenshiDir.replace('/','\\').toStdString() + "RE_Kenshi\\game_speed_tutorial.png\"";
+    ShellThread *dllDeleteThread = new ShellThread(command);
+    connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
+    connect(dllDeleteThread, &ShellThread::resultSuccess, this, &UninstallWindow::handleTutorialImageDeleteSuccess);
+    dllDeleteThread->start();
+    ui->progressBar->setValue(GetUninstallPercent(DELETE_TUT_IMAGE));
+}
+
+void UninstallWindow::handleTutorialImageDeleteSuccess()
 {
     QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
     std::string heightmapPath = kenshiDir.replace('/','\\').toStdString() + "data\\newland\\land\\fullmap.cif";

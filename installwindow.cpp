@@ -17,6 +17,7 @@ enum InstallStep
     BACKUP_COPY,
     MAIN_COPY,
     SECONDARY_COPY,
+    TUT_IMAGE_COPY,
     MOD_SETTINGS_UPDATE,
     COMPRESS,
     // hack to make compression take most of the bar
@@ -116,6 +117,22 @@ void InstallWindow::handleMainDLLCopySuccess()
 }
 
 void InstallWindow::handleSecondaryDLLCopySuccess()
+{
+
+    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+    // Create folder (done in-place as it should be instant)
+    std::string command = "mkdir \"" + kenshiDir.toStdString() + "RE_Kenshi\"";
+    // no error-check - checking if the tut file copy is successful is a better acid test
+    system(command.c_str());
+    std::string tutWritePath = kenshiDir.toStdString() + "RE_Kenshi/game_speed_tutorial.png";
+    CopyThread *modCopyThread = new CopyThread("tools/game_speed_tutorial.png", tutWritePath, this);
+    connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+    connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleTutorialImageCopySuccess);
+    modCopyThread->start();
+    ui->progressBar->setValue(GetInstallPercent(TUT_IMAGE_COPY));
+}
+
+void InstallWindow::handleTutorialImageCopySuccess()
 {
     // no threading + GUI update on this once since it's fast
     ui->label->setText("Updating mod config...");
