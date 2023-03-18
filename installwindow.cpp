@@ -48,7 +48,7 @@ InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, bool
     this->checkUpdates = checkUpdates;
     this->clearSkippedVersions = clearSkippedVersions;
 
-    ui->label->setText("Double-checking hash...");
+    ui->label->setText(tr("Double-checking hash..."));
 
     HashThread *hashThread = new HashThread(kenshiExePath.toStdString());
     connect(hashThread, &HashThread::resultError, this, &InstallWindow::handleError);
@@ -61,19 +61,19 @@ void InstallWindow::handleExeHash(QString hash)
     if(HashThread::HashIsModded(hash.toStdString()))
     {
         // undo EXE modifications
-        ui->label->setText("Hash matches. Uninstalling old RE_Kenshi modifications...");
+        ui->label->setText(tr("Hash matches. Uninstalling old RE_Kenshi modifications..."));
         // TODO
     }
     else if(HashThread::HashSupported(hash.toStdString()))
     {
-        ui->label->setText("Hash matches. Making kenshi plugin config backup...");
+        ui->label->setText(tr("Hash matches. Making kenshi plugin config backup..."));
         QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
         std::string pluginsConfigPath = kenshiDir.toStdString() + "Plugins_x64.cfg";
         std::string pluginsConfigBackupPath = kenshiDir.toStdString() + "Plugins_x64_vanilla.cfg";
         std::ifstream configBackupFile(pluginsConfigBackupPath);
         if(configBackupFile.is_open())
         {
-            ui->label->setText("Plugin config already backed up, skipping...");
+            ui->label->setText(tr("Plugin config already backed up, skipping..."));
             handleBackupCopySuccess();
         }
         else
@@ -97,7 +97,7 @@ void InstallWindow::handleBackupCopySuccess()
 {
     QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
     std::string dllWritePath = kenshiDir.toStdString() + "RE_Kenshi.dll";
-    ui->label->setText("Copying mod files...");
+    ui->label->setText(tr("Copying mod files..."));
     CopyThread *modCopyThread = new CopyThread("tools/RE_Kenshi.dll", dllWritePath, this);
     connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
     connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleMainDLLCopySuccess);
@@ -135,8 +135,20 @@ void InstallWindow::handleSecondaryDLLCopySuccess()
 void InstallWindow::handleTutorialImageCopySuccess()
 {
     // no threading + GUI update on this once since it's fast
-    ui->label->setText("Updating mod config...");
+    ui->label->setText(tr("Updating mod config..."));
     QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+
+    // copy translation files
+    // Command doesn't like forward slashes
+    std::string command = ("xcopy /S /Y tools\\locale \"" + kenshiDir.replace("/","\\") + "RE_Kenshi\\locale\\\"").toStdString();
+    int result = system(command.c_str());
+    if(result != 0)
+    {
+        handleError(tr("Error copying translation files. "));
+        return;
+    }
+
+    // update settings
     QFile modConfigFile(kenshiDir + "RE_Kenshi.ini");
     modConfigFile.open(QFile::ReadOnly);
     QJsonDocument jsonDoc = QJsonDocument().fromJson(modConfigFile.readAll());
@@ -161,7 +173,7 @@ void InstallWindow::handleModSettingsUpdateSuccess()
     if(compressHeightmap)
     {
         // TODO refactor - this is in two places
-        ui->label->setText("Compressing heightmap, this may take a minute or two...");
+        ui->label->setText(tr("Compressing heightmap, this may take a minute or two..."));
         QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
         std::string heightmapReadPath = kenshiDir.toStdString() + "data/newland/land/fullmap.tif";
         std::string heightmapWritePath = kenshiDir.toStdString() + "data/newland/land/fullmap.cif";
@@ -175,7 +187,7 @@ void InstallWindow::handleModSettingsUpdateSuccess()
     else
     {
         // TODO refactor - this is in two places
-        ui->label->setText("Adding RE_Kenshi to plugin config file...");
+        ui->label->setText(tr("Adding RE_Kenshi to plugin config file..."));
         QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
         std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
         std::string pluginLoadStr = "Plugin=RE_Kenshi";
@@ -191,7 +203,7 @@ void InstallWindow::handleModSettingsUpdateSuccess()
 void InstallWindow::handleHeightmapCompressSuccess()
 {
     // TODO refactor - this is in two places
-    ui->label->setText("Adding RE_Kenshi to plugin config file...");
+    ui->label->setText(tr("Adding RE_Kenshi to plugin config file..."));
     QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
     std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
     std::string pluginLoadStr = "Plugin=RE_Kenshi";
@@ -208,11 +220,11 @@ void InstallWindow::handleConfigAppendSuccess()
 {
     if(error)
     {
-        ui->label->setText("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" and \"Plugins_x64_vanilla.cfg\" to \"Plugins_x64.cfg\" to fix whatever I've done... :(");
+        ui->label->setText(tr("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" and \"Plugins_x64_vanilla.cfg\" to \"Plugins_x64.cfg\" to fix whatever I've done... :("));
     }
     else
     {
-        ui->label->setText("RE_Kenshi has installed successfully!");
+        ui->label->setText(tr("RE_Kenshi has installed successfully!"));
         ui->progressBar->setValue(GetInstallPercent(DONE));
     }
     ui->closeButton->setEnabled(true);
@@ -221,8 +233,8 @@ void InstallWindow::handleConfigAppendSuccess()
 void InstallWindow::handleShellError(int error)
 {
     // TODO
-    std::string text = "Error: Shell command returned: " + std::to_string(error) + " install aborted.";
-    ui->label->setText(QString::fromStdString(text));
+    QString text = tr("Error: Shell command returned: ") + QString::fromStdString(std::to_string(error)) + tr(" install aborted.");
+    ui->label->setText(text);
     error = true;
     ui->closeButton->setEnabled(true);
 }
@@ -230,7 +242,7 @@ void InstallWindow::handleShellError(int error)
 void InstallWindow::handleError(QString error)
 {
     // TODO
-    ui->label->setText("Error: " + error);
+    ui->label->setText(tr("Error: ") + error);
     error = true;
     ui->closeButton->setEnabled(true);
 }

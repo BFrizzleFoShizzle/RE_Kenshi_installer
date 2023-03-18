@@ -55,6 +55,6 @@ void HashThread::run() {
     }
     else
     {
-        emit resultError("File could not be opened");
+        emit resultError(tr("File could not be opened"));
     }
 }

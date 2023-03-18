@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <fstream>
+#include <qtranslator.h>
 
 #include "hashthread.h"
 #include "copythread.h"
@@ -10,13 +11,22 @@
 
 #include "optionswindow.h"
 #include "uninstallwindow.h"
-
+ #include <qlayout.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    translator.load(QString::fromStdString("./RE_Kenshi_" + QLocale::system().name().toStdString().substr(0,2)));
+    QApplication::instance()->installTranslator(&translator);
     ui->setupUi(this);
+    ui->comboBox->addItem("English", "en");
+    std::string language = QLocale::system().name().toStdString().substr(0,2);
+    ui->comboBox->setCurrentIndex(ui->comboBox->findData(QString::fromStdString(language)));
+
+    // Dumb workaround to create a multiline button
+    QGridLayout* layout = new QGridLayout(ui->kenshiDirButton);
+    layout->addWidget(ui->kenshiDirButtonLabel);
 }
 
 MainWindow::~MainWindow()
@@ -27,7 +37,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_kenshiDirButton_clicked()
 {
-    QString kenshiBinLoc = QFileDialog::getOpenFileName(this, "Select Kenshi executable:", "", "Kenshi executable (kenshi_x64.exe;kenshi_GOG_x64.exe)");
+    QString kenshiBinLoc = QFileDialog::getOpenFileName(this, tr("Select Kenshi executable:"), "", "Kenshi executable (kenshi_x64.exe;kenshi_GOG_x64.exe)");
     ui->kenshiDirText->setText(kenshiBinLoc);
 }
 
@@ -41,7 +51,7 @@ void MainWindow::on_nextButton_clicked()
     bool oldUninstallEnabled = ui->uninstallButton->isEnabled();
     setEnabled(false);
     QString labelText = ui->outputLabel->text();
-    ui->outputLabel->setText(labelText + "\nProcessing...");
+    ui->outputLabel->setText(labelText + "\n" + tr("Processing..."));
     repaint();
 
     std::string kenshiExePath = ui->kenshiDirText->text().toStdString();
@@ -63,7 +73,7 @@ void MainWindow::on_kenshiDirText_textChanged(const QString &arg1)
     std::ifstream kenshiExe(arg1.toStdString(), std::ios::ate | std::ios::binary);
     if(kenshiExe.is_open())
     {
-        ui->outputLabel->setText("Checking file hash...");
+        ui->outputLabel->setText(tr("Checking file hash..."));
 
         HashThread *hashThread = new HashThread(arg1.toStdString(), this);
         // Hopefully stops ToCTToU race condition if you modify the path while hashes are being calculated
@@ -75,13 +85,13 @@ void MainWindow::on_kenshiDirText_textChanged(const QString &arg1)
     }
     else
     {
-        ui->outputLabel->setText("Please select kenshi executable.");
+        ui->outputLabel->setText(tr("Please select kenshi executable."));
     }
 }
 
 void MainWindow::handleError(QString error)
 {
-    ui->outputLabel->setText("Error hashing file. " + error + " Please select kenshi executable.");
+    ui->outputLabel->setText(tr("Error hashing file. ") + error + tr(" Please select kenshi executable."));
     ui->kenshiDirButton->setEnabled(true);
     ui->kenshiDirText->setEnabled(true);
 }
@@ -112,7 +122,7 @@ void MainWindow::handleExeHash(QString hash)
 {
     if(HashThread::HashSupported(hash.toStdString()))
     {
-        ui->outputLabel->setText("Game hash matches. Continue...");
+        ui->outputLabel->setText(tr("Game hash matches. Continue..."));
         ui->nextButton->setEnabled(true);
         ui->uninstallButton->setEnabled(false);
 
@@ -123,7 +133,7 @@ void MainWindow::handleExeHash(QString hash)
     }
     else
     {
-        ui->outputLabel->setText("Hash " + hash + " does not match. This mod is only compatible with Kenshi 1.0.55, 1.0.59 (Steam) and 1.0.59 (GOG).");
+        ui->outputLabel->setText(tr("Hash ") + hash + tr(" does not match. This mod is only compatible with Kenshi 1.0.55, 1.0.59 (Steam) and 1.0.59 (GOG)."));
         ui->nextButton->setEnabled(false);
         ui->uninstallButton->setEnabled(false);
     }
@@ -139,13 +149,28 @@ void MainWindow::on_uninstallButton_clicked()
     ui->uninstallButton->setEnabled(false);
     QString kenshiLocation = ui->kenshiDirText->text();
     QMessageBox *confirmBox = new QMessageBox(this);
-    confirmBox->setText("Are you sure you wish to uninstall RE_Kenshi?");
-    confirmBox->addButton("Confirm", QMessageBox::ButtonRole::AcceptRole);
-    confirmBox->addButton("Cancel", QMessageBox::ButtonRole::RejectRole);
+    confirmBox->setText(tr("Are you sure you wish to uninstall RE_Kenshi?"));
+    confirmBox->addButton(tr("Confirm"), QMessageBox::ButtonRole::AcceptRole);
+    confirmBox->addButton(tr("Cancel"), QMessageBox::ButtonRole::RejectRole);
     if(confirmBox->exec() == QMessageBox::ButtonRole::AcceptRole)
     {
         this->hide();
         UninstallWindow* uninstallWindow = new UninstallWindow(ui->kenshiDirText->text(), InstallerAction::UNINSTALL);
         uninstallWindow->show();
     }
+}
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    QString language = QString(ui->comboBox->currentData().toString());
+    qDebug(language.toStdString().c_str());
+    QApplication::instance()->removeTranslator(&translator);
+    translator.load("./RE_Kenshi_" + language);
+    QApplication::instance()->installTranslator(&translator);
+    ui->retranslateUi(this);
+    // Apparently, have to do this manually...
+    ui->outputLabel->setText(tr("Please select kenshi executable"));
+    ui->kenshiDirButtonLabel->setText(tr("Find Kenshi install dir"));
+    ui->nextButton->setText(tr("Next"));
+    ui->uninstallButton->setText(tr("Uninstall"));
 }

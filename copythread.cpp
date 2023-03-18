@@ -16,10 +16,10 @@ void CopyThread::run() {
     std::ofstream dest(destPath, std::ios::binary);
     if(!source.is_open() || !dest.is_open())
     {
-        std::string errorMsg = "Error opening files...";
-        errorMsg = errorMsg + sourcePath + (source.is_open() ? "1" : "0");
-        errorMsg = errorMsg + destPath + (dest.is_open() ? "1" : "0");
-        emit resultError(QString::fromStdString(errorMsg));
+        QString errorMsg = tr("Error opening files...");
+        errorMsg = errorMsg + QString::fromStdString(sourcePath) + (source.is_open() ? "1" : "0");
+        errorMsg = errorMsg + QString::fromStdString(destPath) + (dest.is_open() ? "1" : "0");
+        emit resultError(errorMsg);
     }
     else
     {
