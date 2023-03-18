@@ -38,6 +38,9 @@ FORMS += \
     mainwindow.ui \
     optionswindow.ui
 
+TRANSLATIONS = RE_Kenshi_en.ts \
+    RE_Kenshi_ru.ts
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
@@ -48,4 +51,6 @@ unix|win32: LIBS += -L$$PWD/'../../../../../Program Files/Microsoft SDKs/Windows
 INCLUDEPATH += $$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/Lib/x64'
 DEPENDPATH += $$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/Lib/x64'
 
-DISTFILES +=
+DISTFILES += \
+    RE_Kenshi_en.ts \
+    RE_Kenshi_ru.ts

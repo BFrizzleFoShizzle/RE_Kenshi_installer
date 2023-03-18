@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     QApplication::instance()->installTranslator(&translator);
     ui->setupUi(this);
     ui->comboBox->addItem("English", "en");
+    ui->comboBox->addItem("Русский", "ru");
     std::string language = QLocale::system().name().toStdString().substr(0,2);
     ui->comboBox->setCurrentIndex(ui->comboBox->findData(QString::fromStdString(language)));
 
