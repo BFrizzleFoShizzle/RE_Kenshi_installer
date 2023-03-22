@@ -11,6 +11,8 @@
 #include "hashthread.h"
 #include "shellthread.h"
 
+#include "bugs.h"
+
 enum InstallStep
 {
     HASH_CHECK,
@@ -32,6 +34,21 @@ enum InstallStep
 int GetInstallPercent(InstallStep step)
 {
     return (100 * step) / InstallStep::DONE;
+}
+
+InstallStep GetInstallStepFromPercent(int percent)
+{
+    int currError = 100;
+    int bestStep = -1;
+    for(int i=0;i<=InstallStep::DONE;++i)
+    {
+        if(std::abs(percent - GetInstallPercent((InstallStep)i)) < currError)
+        {
+            currError = std::abs(percent - GetInstallPercent((InstallStep)i));
+            bestStep = i;
+        }
+    }
+    return (InstallStep)bestStep;
 }
 
 InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, bool checkUpdates,
@@ -118,7 +135,6 @@ void InstallWindow::handleMainDLLCopySuccess()
 
 void InstallWindow::handleSecondaryDLLCopySuccess()
 {
-
     QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
     // Create folder (done in-place as it should be instant)
     std::string command = "mkdir \"" + kenshiDir.toStdString() + "RE_Kenshi\"";
@@ -220,6 +236,7 @@ void InstallWindow::handleConfigAppendSuccess()
 {
     if(error)
     {
+        Bugs::ReportBug("InstallWindow", DONE, "UNCAUGHT ERROR: this should never happen");
         ui->label->setText(tr("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" and \"Plugins_x64_vanilla.cfg\" to \"Plugins_x64.cfg\" to fix whatever I've done... :("));
     }
     else
@@ -230,19 +247,19 @@ void InstallWindow::handleConfigAppendSuccess()
     ui->closeButton->setEnabled(true);
 }
 
-void InstallWindow::handleShellError(int error)
+void InstallWindow::handleShellError(int errorVal)
 {
-    // TODO
-    QString text = tr("Error: Shell command returned: ") + QString::fromStdString(std::to_string(error)) + tr(" install aborted.");
+    Bugs::ReportBug("InstallWindow", GetInstallStepFromPercent(ui->progressBar->value()), "Shell command returned: " + std::to_string(errorVal));
+    QString text = tr("Error: Shell command returned: ") + QString::fromStdString(std::to_string(errorVal)) + tr(" install aborted.");
     ui->label->setText(text);
     error = true;
     ui->closeButton->setEnabled(true);
 }
 
-void InstallWindow::handleError(QString error)
+void InstallWindow::handleError(QString errorStr)
 {
-    // TODO
-    ui->label->setText(tr("Error: ") + error);
+    Bugs::ReportBug("InstallWindow", GetInstallStepFromPercent(ui->progressBar->value()), errorStr.toStdString());
+    ui->label->setText(tr("Error: ") + errorStr);
     error = true;
     ui->closeButton->setEnabled(true);
 }

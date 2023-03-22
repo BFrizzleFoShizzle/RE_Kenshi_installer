@@ -10,6 +10,8 @@
 #include "shellthread.h"
 #include "diskutil.h"
 
+#include "bugs.h"
+
 enum UninstallStep
 {
     CHECK_EXE_HASH,
@@ -26,6 +28,21 @@ enum UninstallStep
 int GetUninstallPercent(UninstallStep step)
 {
     return (100 * step) / UninstallStep::DONE;
+}
+
+UninstallStep GetUninstallStepFromPercent(int percent)
+{
+    int currError = 100;
+    int bestStep = -1;
+    for(int i=0;i<=UninstallStep::DONE;++i)
+    {
+        if(std::abs(percent - GetUninstallPercent((UninstallStep)i)) < currError)
+        {
+            currError = std::abs(percent - GetUninstallPercent((UninstallStep)i));
+            bestStep = i;
+        }
+    }
+    return (UninstallStep)bestStep;
 }
 
 UninstallWindow::UninstallWindow(QString kenshiExePath, MainWindow::InstallerAction action, bool compressHeightmap, bool checkUpdates,
@@ -91,6 +108,7 @@ void UninstallWindow::handleExeHash(QString hash)
         else
         {
             ui->label->setText(tr("Critical error: no config file backup!"));
+            Bugs::ReportBug("UninstallWindow", RESTORE_CONFIG, "Critical error: no config file backup!");
             ui->progressBar->setValue(GetUninstallPercent(DONE));
             return;
         }
@@ -98,6 +116,7 @@ void UninstallWindow::handleExeHash(QString hash)
     else
     {
         ui->label->setText(tr("Hash doesn't match! This shouldn't be possible! No files changed, aborted. Mod not installed. It is now safe to close this window."));
+        Bugs::ReportBug("UninstallWindow", CHECK_EXE_HASH, "Hash doesn't match!");
         ui->progressBar->setValue(GetUninstallPercent(DONE));
         return;
     }
@@ -194,6 +213,7 @@ void UninstallWindow::handleCompressedHeightmapDeleteSuccess()
 {
     if(error)
     {
+        Bugs::ReportBug("UninstallWindow", DONE, "UNCAUGHT ERROR: this should never happen");
         ui->label->setText(tr("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" and \"Plugins_x64_vanilla.cfg\" to \"Plugins_x64.cfg\" to fix whatever I've done... :("));
     }
     else
@@ -215,19 +235,19 @@ void UninstallWindow::handleCompressedHeightmapDeleteSuccess()
     ui->closeButton->setEnabled(true);
 }
 
-void UninstallWindow::handleShellError(int error)
+void UninstallWindow::handleShellError(int errorVal)
 {
-    // TODO
-    QString text = tr("Error: Shell command returned: ") + error + tr(" install aborted.");
+    Bugs::ReportBug("UninstallWindow", GetUninstallStepFromPercent(ui->progressBar->value()), "Error: Shell command returned: " + std::to_string(errorVal));
+    QString text = tr("Error: Shell command returned: ") + QString::number(errorVal) + tr(" install aborted.");
     ui->label->setText(text);
     this->error = true;
     ui->closeButton->setEnabled(true);
 }
 
-void UninstallWindow::handleError(QString error)
+void UninstallWindow::handleError(QString errorStr)
 {
-    // TODO
-    ui->label->setText(tr("Error: ") + error);
+    Bugs::ReportBug("UninstallWindow", GetUninstallStepFromPercent(ui->progressBar->value()), "Error: " + errorStr.toStdString());
+    ui->label->setText(tr("Error: ") + errorStr);
     this->error = true;
     ui->closeButton->setEnabled(true);
 }
