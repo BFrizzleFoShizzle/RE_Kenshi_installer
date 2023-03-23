@@ -28,7 +28,7 @@ void Bugs::ReportBug(std::string window, int step, std::string error)
                        + QObject::tr("\nWindow: ") + QString::fromStdString(window) // the name of the window - e.g. InstallerWindow, UninstallerWindow
                        + QObject::tr("\nInstallation step: ") + QString::number(step)
                        + QObject::tr("\nError message: ")
-                       + QObject::tr("\n") + QString::fromStdString(error));
+                       + "\n" + QString::fromStdString(error));
     consentBox.setStandardButtons(QMessageBox::Yes);
     consentBox.addButton(QMessageBox::No);
     consentBox.setDefaultButton(QMessageBox::Yes);
