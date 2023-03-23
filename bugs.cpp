@@ -11,7 +11,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
-
+#include <QObject>
 
 std::string installerVersion = "0.1";
 
@@ -20,15 +20,15 @@ void Bugs::ReportBug(std::string window, int step, std::string error)
     // get user consent
     QMessageBox consentBox;
     consentBox.setIcon(QMessageBox::Critical);
-    consentBox.setWindowTitle("Error");
-    consentBox.setText(QString("RE_Kenshi's installer has encountered an error")
-                       + "\nWould you like to send an error report to the RE_Kenshi team?"
-                       + "\nYour report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with the following information:"
-                       + "\nInstaller version: " + QString::fromStdString(installerVersion)
-                       + "\nWindow: " + QString::fromStdString(window)
-                       + "\nInstallation step: " + QString::number(step)
-                       + "\nError message: "
-                       + "\n" + QString::fromStdString(error));
+    consentBox.setWindowTitle(QObject::tr("Error"));
+    consentBox.setText(QString(QObject::tr("RE_Kenshi's installer has encountered an error"))
+                       + QObject::tr("\nWould you like to send an error report to the RE_Kenshi team?")
+                       + QObject::tr("\nYour report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with the following information:")
+                       + QObject::tr("\nInstaller version: ") + QString::fromStdString(installerVersion)
+                       + QObject::tr("\nWindow: ") + QString::fromStdString(window) // the name of the window - e.g. InstallerWindow, UninstallerWindow
+                       + QObject::tr("\nInstallation step: ") + QString::number(step)
+                       + QObject::tr("\nError message: ")
+                       + QObject::tr("\n") + QString::fromStdString(error));
     consentBox.setStandardButtons(QMessageBox::Yes);
     consentBox.addButton(QMessageBox::No);
     consentBox.setDefaultButton(QMessageBox::Yes);
@@ -72,8 +72,8 @@ void Bugs::ReportBug(std::string window, int step, std::string error)
             // success
             QMessageBox msg;
             msg.setIcon(QMessageBox::Information);
-            msg.setText("Bug report sent successfully");
-            msg.setWindowTitle("Success");
+            msg.setText(QObject::tr("Bug report sent successfully"));
+            msg.setWindowTitle(QObject::tr("Success"));
             msg.exec();
             return;
         }
@@ -82,7 +82,7 @@ void Bugs::ReportBug(std::string window, int step, std::string error)
     // if we reach this point, we failed
     QMessageBox msg;
     msg.setIcon(QMessageBox::Critical);
-    msg.setText("Bug report failed to send");
-    msg.setWindowTitle("Error");
+    msg.setText(QObject::tr("Bug report failed to send"));
+    msg.setWindowTitle(QObject::tr("Error"));
     msg.exec();
 }
