@@ -43,6 +43,7 @@ FORMS += \
     optionswindow.ui
 
 TRANSLATIONS = RE_Kenshi_en.ts \
+    RE_Kenshi_de.ts \
     RE_Kenshi_ru.ts
 
 # Default rules for deployment.
@@ -56,5 +57,6 @@ INCLUDEPATH += $$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/L
 DEPENDPATH += $$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/Lib/x64'
 
 DISTFILES += \
+    RE_Kenshi_de.ts \
     RE_Kenshi_en.ts \
     RE_Kenshi_ru.ts
