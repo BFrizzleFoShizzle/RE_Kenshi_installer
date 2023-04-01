@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <fstream>
 #include <QFile>
+#include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -159,6 +160,24 @@ void InstallWindow::handleTutorialImageCopySuccess()
         handleError(tr("Error copying translation files. "));
         return;
     }
+
+	// clear shader cache version
+	if(options.clearShaderCache)
+	{
+		try
+		{
+			QFileInfo check_file(kenshiDir + "RE_Kenshi/shader_cache.sc");
+			if(check_file.exists() && check_file.isFile())
+			{
+				QFile file (check_file.absoluteFilePath());
+				file.remove();
+			}
+		}
+		catch (const std::exception& e)
+		{
+			// doesn't really matter if this fails, it's optional anyway
+		}
+	}
 
     // update settings
     QFile modConfigFile(kenshiDir + "RE_Kenshi.ini");
