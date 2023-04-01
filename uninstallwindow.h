@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <mainwindow.h>
+#include <installoptions.h>
 
 namespace Ui {
 class InstallWindow;
@@ -13,7 +14,7 @@ class UninstallWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit UninstallWindow(QString kenshiExePath, MainWindow::InstallerAction action, bool compressHeightmap = false, bool checkUpdates = false, bool clearSkippedVersions = true, QWidget *parent = nullptr);
+	explicit UninstallWindow(MainWindow::InstallerAction action, InstallOptions options, QWidget *parent = nullptr);
     ~UninstallWindow();
 
 private slots:
@@ -29,13 +30,10 @@ private:
     void handleMainDLLDeleteSuccess();
     void handleSecondaryDLLDeleteSuccess();
     void handleTutorialImageDeleteSuccess();
-    void handleCompressedHeightmapDeleteSuccess();
-    QString kenshiExePath;
-    bool error;
-    MainWindow::InstallerAction action;
-    bool compressHeightmap;
-    bool checkUpdates;
-    bool clearSkippedVersions;
+	void handleCompressedHeightmapDeleteSuccess();
+	MainWindow::InstallerAction action;
+	InstallOptions options;
+	bool error;
 };
 
 #endif // UNINSTALLWINDOW_H

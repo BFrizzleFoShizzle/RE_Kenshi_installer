@@ -105,7 +105,7 @@ bool IsModInstalled(QString kenshiEXEHash, QString kenshiEXEPath)
         return true;
 
     // if backup file + DLL exists, mod is installed
-    QString kenshiDir = kenshiEXEPath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = kenshiEXEPath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
     std::string pluginsConfigBackupPath = kenshiDir.toStdString() + "Plugins_x64_vanilla.cfg";
     std::string dllPath = kenshiDir.toStdString() + "RE_Kenshi.dll";
     std::ifstream configBackupFile(pluginsConfigBackupPath);
@@ -156,7 +156,9 @@ void MainWindow::on_uninstallButton_clicked()
     if(confirmBox->exec() == QMessageBox::ButtonRole::AcceptRole)
     {
         this->hide();
-        UninstallWindow* uninstallWindow = new UninstallWindow(ui->kenshiDirText->text(), InstallerAction::UNINSTALL);
+		InstallOptions options;
+		options.kenshiExePath = kenshiLocation;
+		UninstallWindow* uninstallWindow = new UninstallWindow(InstallerAction::UNINSTALL, options);
         uninstallWindow->show();
     }
 }

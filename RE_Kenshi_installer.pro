@@ -28,6 +28,7 @@ HEADERS += \
     discord.h \
     diskutil.h \
     hashthread.h \
+    installoptions.h \
     installwindow.h \
     mainwindow.h \
     md5.h \

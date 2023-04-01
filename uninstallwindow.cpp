@@ -45,19 +45,15 @@ UninstallStep GetUninstallStepFromPercent(int percent)
     return (UninstallStep)bestStep;
 }
 
-UninstallWindow::UninstallWindow(QString kenshiExePath, MainWindow::InstallerAction action, bool compressHeightmap, bool checkUpdates,
-                                 bool clearSkippedVersions, QWidget *parent)
+UninstallWindow::UninstallWindow(MainWindow::InstallerAction action, InstallOptions options, QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::InstallWindow)
-    , compressHeightmap(compressHeightmap)
-    , checkUpdates(checkUpdates)
-    , clearSkippedVersions(clearSkippedVersions)
+	, ui(new Ui::InstallWindow)
 {
     ui->setupUi(this);
 
     error = false;
 
-    this->kenshiExePath = kenshiExePath;
+	this->options = options;
     this->action = action;
 
     // Step 1: check if EXE is modded
@@ -71,7 +67,7 @@ UninstallWindow::UninstallWindow(QString kenshiExePath, MainWindow::InstallerAct
 
     ui->label->setText("Double-checking hash...");
 
-    HashThread *hashThread = new HashThread(kenshiExePath.toStdString());
+	HashThread *hashThread = new HashThread(options.kenshiExePath.toStdString());
     connect(hashThread, &HashThread::resultError, this, &UninstallWindow::handleError);
     connect(hashThread, &HashThread::resultSuccess, this, &UninstallWindow::handleExeHash);
     hashThread->start();
@@ -79,7 +75,7 @@ UninstallWindow::UninstallWindow(QString kenshiExePath, MainWindow::InstallerAct
 
 void UninstallWindow::handleExeHash(QString hash)
 {
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     if(HashThread::HashIsModded(hash.toStdString()))
     {
         // undo EXE modifications
@@ -128,9 +124,9 @@ void UninstallWindow::handleBackupExeHash(QString hash)
     {
         // restore backup
         ui->label->setText(tr("Backup hash matches, restoring vanilla kenshi EXE."));
-        QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+		QString kenshiDir = options.GetKenshiInstallDir();
         std::string exeBackupPath = kenshiDir.toStdString() + "kenshi_x64_vanilla.exe";
-        CopyThread *exeRestoreThread = new CopyThread(exeBackupPath, kenshiExePath.toStdString(), this);
+		CopyThread *exeRestoreThread = new CopyThread(exeBackupPath, options.kenshiExePath.toStdString(), this);
         connect(exeRestoreThread, &CopyThread::resultError, this, &UninstallWindow::handleError);
         // RE_Kenshi 0.1-0.1.1 - don't need to revert plugin config file
         connect(exeRestoreThread, &CopyThread::resultSuccess, this, &UninstallWindow::handleExeRestored);
@@ -148,7 +144,7 @@ void UninstallWindow::handleBackupExeHash(QString hash)
 void UninstallWindow::handleExeRestored()
 {
     ui->label->setText(tr("Old files restored. Removing RE_Kenshi DLL..."));
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     std::string command = "del \"" + kenshiDir.replace('/','\\').toStdString() + "RE_Kenshi.dll\"";
     ShellThread *dllDeleteThread = new ShellThread(command);
     connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
@@ -160,7 +156,7 @@ void UninstallWindow::handleExeRestored()
 void UninstallWindow::handleMainDLLDeleteSuccess()
 {
     ui->label->setText(tr("Old files restored. Removing CompressTools DLL..."));
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     std::string command = "del \"" + kenshiDir.replace('/','\\').toStdString() + "CompressToolsLib.dll\"";
     ShellThread *dllDeleteThread = new ShellThread(command);
     connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
@@ -172,7 +168,7 @@ void UninstallWindow::handleMainDLLDeleteSuccess()
 void UninstallWindow::handleSecondaryDLLDeleteSuccess()
 {
     ui->label->setText(tr("Old files restored. Removing RE_Kenshi data..."));
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     std::string command = "del \"" + kenshiDir.replace('/','\\').toStdString() + "RE_Kenshi\\game_speed_tutorial.png\"";
     ShellThread *dllDeleteThread = new ShellThread(command);
     connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
@@ -183,7 +179,7 @@ void UninstallWindow::handleSecondaryDLLDeleteSuccess()
 
 void UninstallWindow::handleTutorialImageDeleteSuccess()
 {
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     std::string heightmapPath = kenshiDir.replace('/','\\').toStdString() + "data\\newland\\land\\fullmap.cif";
 
     // check if compressed heightmap exists
@@ -228,7 +224,7 @@ void UninstallWindow::handleCompressedHeightmapDeleteSuccess()
         {
             // successfully uninstalled previous version, run installer to install new version
             this->hide();
-            InstallWindow* nextWindow = new InstallWindow(kenshiExePath, compressHeightmap, checkUpdates, clearSkippedVersions, nullptr);
+			InstallWindow* nextWindow = new InstallWindow(options, nullptr);
             nextWindow->show();
         }
     }

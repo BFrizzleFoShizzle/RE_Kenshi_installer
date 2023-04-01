@@ -51,23 +51,19 @@ InstallStep GetInstallStepFromPercent(int percent)
     return (InstallStep)bestStep;
 }
 
-InstallWindow::InstallWindow(QString kenshiExePath, bool compressHeightmap, bool checkUpdates,
-                             bool clearSkippedVersions, QWidget *parent) :
+InstallWindow::InstallWindow(InstallOptions  options, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::InstallWindow)
 {
     ui->setupUi(this);
 
-    error = false;
+	error = false;
 
-    this->kenshiExePath = kenshiExePath;
-    this->compressHeightmap = compressHeightmap;
-    this->checkUpdates = checkUpdates;
-    this->clearSkippedVersions = clearSkippedVersions;
+	this->options = options;
 
     ui->label->setText(tr("Double-checking hash..."));
 
-    HashThread *hashThread = new HashThread(kenshiExePath.toStdString());
+	HashThread *hashThread = new HashThread(options.kenshiExePath.toStdString());
     connect(hashThread, &HashThread::resultError, this, &InstallWindow::handleError);
     connect(hashThread, &HashThread::resultSuccess, this, &InstallWindow::handleExeHash);
     hashThread->start();
@@ -84,7 +80,7 @@ void InstallWindow::handleExeHash(QString hash)
     else if(HashThread::HashSupported(hash.toStdString()))
     {
         ui->label->setText(tr("Hash matches. Making kenshi plugin config backup..."));
-        QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+		QString kenshiDir = options.GetKenshiInstallDir();
         std::string pluginsConfigPath = kenshiDir.toStdString() + "Plugins_x64.cfg";
         std::string pluginsConfigBackupPath = kenshiDir.toStdString() + "Plugins_x64_vanilla.cfg";
         std::ifstream configBackupFile(pluginsConfigBackupPath);
@@ -112,7 +108,7 @@ void InstallWindow::handleExeHash(QString hash)
 
 void InstallWindow::handleBackupCopySuccess()
 {
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     std::string dllWritePath = kenshiDir.toStdString() + "RE_Kenshi.dll";
     ui->label->setText(tr("Copying mod files..."));
     CopyThread *modCopyThread = new CopyThread("tools/RE_Kenshi.dll", dllWritePath, this);
@@ -124,7 +120,7 @@ void InstallWindow::handleBackupCopySuccess()
 
 void InstallWindow::handleMainDLLCopySuccess()
 {
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     std::string dllWritePath = kenshiDir.toStdString() + "CompressToolsLib.dll";
     CopyThread *modCopyThread = new CopyThread("tools/CompressToolsLib.dll", dllWritePath, this);
     connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
@@ -135,7 +131,7 @@ void InstallWindow::handleMainDLLCopySuccess()
 
 void InstallWindow::handleSecondaryDLLCopySuccess()
 {
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     // Create folder (done in-place as it should be instant)
     std::string command = "mkdir \"" + kenshiDir.toStdString() + "RE_Kenshi\"";
     // no error-check - checking if the tut file copy is successful is a better acid test
@@ -152,7 +148,7 @@ void InstallWindow::handleTutorialImageCopySuccess()
 {
     // no threading + GUI update on this once since it's fast
     ui->label->setText(tr("Updating mod config..."));
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
 
     // copy translation files
     // Command doesn't like forward slashes
@@ -170,9 +166,9 @@ void InstallWindow::handleTutorialImageCopySuccess()
     QJsonDocument jsonDoc = QJsonDocument().fromJson(modConfigFile.readAll());
     modConfigFile.close();
     QJsonObject jsonObj = jsonDoc.object();
-    jsonObj.insert("CheckUpdates", checkUpdates);
+	jsonObj.insert("CheckUpdates", options.checkUpdates);
     // clear skipped version
-    if(clearSkippedVersions)
+	if(options.clearSkippedVersions)
         jsonObj.insert("SkippedVersion", "");
     jsonDoc.setObject(jsonObj);
     modConfigFile.open(QFile::WriteOnly);
@@ -186,11 +182,11 @@ void InstallWindow::handleTutorialImageCopySuccess()
 
 void InstallWindow::handleModSettingsUpdateSuccess()
 {
-    if(compressHeightmap)
+	if(options.compressHeightmap)
     {
         // TODO refactor - this is in two places
         ui->label->setText(tr("Compressing heightmap, this may take a minute or two..."));
-        QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+		QString kenshiDir = options.GetKenshiInstallDir();
         std::string heightmapReadPath = kenshiDir.toStdString() + "data/newland/land/fullmap.tif";
         std::string heightmapWritePath = kenshiDir.toStdString() + "data/newland/land/fullmap.cif";
         std::string command = "tools\\CompressTools.exe \"" + heightmapReadPath + "\" \"" + heightmapWritePath + "\"";
@@ -204,7 +200,7 @@ void InstallWindow::handleModSettingsUpdateSuccess()
     {
         // TODO refactor - this is in two places
         ui->label->setText(tr("Adding RE_Kenshi to plugin config file..."));
-        QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+		QString kenshiDir = options.GetKenshiInstallDir();
         std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
         std::string pluginLoadStr = "Plugin=RE_Kenshi";
         std::string command = "find /c \"" + pluginLoadStr + "\" \"" + configWritePath + "\" >NUL || (echo. >> \"" + configWritePath + "\") && (echo " + pluginLoadStr + " >> \"" + configWritePath + "\")";
@@ -220,7 +216,7 @@ void InstallWindow::handleHeightmapCompressSuccess()
 {
     // TODO refactor - this is in two places
     ui->label->setText(tr("Adding RE_Kenshi to plugin config file..."));
-    QString kenshiDir = kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = options.GetKenshiInstallDir();
     std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
     std::string pluginLoadStr = "Plugin=RE_Kenshi";
     std::string command = "find /c \"" + pluginLoadStr + "\" \"" + configWritePath + "\" >NUL || (echo. >> \"" + configWritePath + "\") && (echo " + pluginLoadStr + " >> \"" + configWritePath + "\")";

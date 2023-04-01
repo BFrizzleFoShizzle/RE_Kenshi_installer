@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+#include <installoptions.h>
+
 namespace Ui {
 class InstallWindow;
 }
@@ -12,7 +14,7 @@ class InstallWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit InstallWindow(QString kenshiExePath, bool compressHeightmap, bool checkUpdates, bool clearSkippedVersions = true, QWidget *parent = nullptr);
+	explicit InstallWindow(InstallOptions  options, QWidget *parent = nullptr);
     ~InstallWindow();
 
 private slots:
@@ -30,10 +32,7 @@ private:
     void handleModSettingsUpdateSuccess();
     void handleHeightmapCompressSuccess();
     void handleConfigAppendSuccess();
-    QString kenshiExePath;
-    bool compressHeightmap;
-    bool checkUpdates;
-    bool clearSkippedVersions;
+	InstallOptions  options;
     bool error;
 };
 

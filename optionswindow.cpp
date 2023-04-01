@@ -41,21 +41,25 @@ OptionsWindow::~OptionsWindow()
 
 void OptionsWindow::on_nextButton_clicked()
 {
-    bool compressHeightmap = ui->compressHeightmapCheckBox->checkState();
-    bool checkUpdates = ui->checkUpdatesCheckBox->checkState();
-    bool clearSkippedVersions = ui->clearSkippedVersionsCheckBox->checkState();
+	InstallOptions options;
+	options.kenshiExePath = kenshiExePath;
+	options.compressHeightmap = ui->compressHeightmapCheckBox->checkState();
+	options.checkUpdates = ui->checkUpdatesCheckBox->checkState();
+	options.clearSkippedVersions = ui->clearSkippedVersionsCheckBox->checkState();
+	options.clearShaderCache = ui->clearShaderCacheCheckBox->checkState();
+
     if(action == MainWindow::InstallerAction::UPGRADE)
     {
         // upgrade
         this->hide();
-        UninstallWindow* uninstallWindow = new UninstallWindow(kenshiExePath, MainWindow::InstallerAction::UPGRADE, compressHeightmap, checkUpdates, clearSkippedVersions);
+		UninstallWindow* uninstallWindow = new UninstallWindow(MainWindow::InstallerAction::UPGRADE, options);
         uninstallWindow->show();
     }
     else
     {
         // regular install
         this->hide();
-        InstallWindow* installWindow = new InstallWindow(kenshiExePath, compressHeightmap, checkUpdates, clearSkippedVersions);
+		InstallWindow* installWindow = new InstallWindow(options);
         installWindow->show();
     }
 }
