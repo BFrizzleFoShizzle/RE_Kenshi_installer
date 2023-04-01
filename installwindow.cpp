@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMessageBox>
 
 #include "installwindow.h"
 #include "ui_installwindow.h"
@@ -11,6 +12,9 @@
 #include "copythread.h"
 #include "hashthread.h"
 #include "shellthread.h"
+#include "process.h"
+#include "uninstallwindow.h"
+#include "mainwindow.h"
 
 #include "bugs.h"
 
@@ -72,6 +76,18 @@ InstallWindow::InstallWindow(InstallOptions  options, QWidget *parent) :
 
 void InstallWindow::handleExeHash(QString hash)
 {
+	QFileInfo executableInfo(options.kenshiExePath);
+	// make sure Kenshi isn't running
+	while(IsProcessRunning(executableInfo.fileName().toStdWString()))
+	{
+		QMessageBox kenshiIsRunningMsgbox;
+		kenshiIsRunningMsgbox.setIcon(QMessageBox::Warning);
+		kenshiIsRunningMsgbox.setWindowTitle(QObject::tr("Please close Kenshi"));
+		kenshiIsRunningMsgbox.setText(QString(QObject::tr("Kenshi is running - please close Kenshi\n") + executableInfo.fileName()));
+		kenshiIsRunningMsgbox.setStandardButtons(QMessageBox::Ok);
+		kenshiIsRunningMsgbox.setDefaultButton(QMessageBox::Ok);
+		kenshiIsRunningMsgbox.exec();
+	}
     if(HashThread::HashIsModded(hash.toStdString()))
     {
         // undo EXE modifications
@@ -92,8 +108,9 @@ void InstallWindow::handleExeHash(QString hash)
         }
         else
         {
-            CopyThread *exeBackupThread = new CopyThread(pluginsConfigPath, pluginsConfigBackupPath, this);
-            connect(exeBackupThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+			CopyThread *exeBackupThread = CopyThread::CreateCopyThread(pluginsConfigPath, pluginsConfigBackupPath, this);
+			connect(exeBackupThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+			connect(exeBackupThread, &CopyThread::resultCancel, this, &InstallWindow::handleCancel);
             connect(exeBackupThread, &CopyThread::resultSuccess, this, &InstallWindow::handleBackupCopySuccess);
             exeBackupThread->start();
             ui->progressBar->setValue(GetInstallPercent(BACKUP_COPY));
@@ -112,8 +129,9 @@ void InstallWindow::handleBackupCopySuccess()
 	QString kenshiDir = options.GetKenshiInstallDir();
     std::string dllWritePath = kenshiDir.toStdString() + "RE_Kenshi.dll";
     ui->label->setText(tr("Copying mod files..."));
-    CopyThread *modCopyThread = new CopyThread("tools/RE_Kenshi.dll", dllWritePath, this);
+	CopyThread *modCopyThread = CopyThread::CreateCopyThread("tools/RE_Kenshi.dll", dllWritePath, this);
     connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+	connect(modCopyThread, &CopyThread::resultCancel, this, &InstallWindow::handleCancel);
     connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleMainDLLCopySuccess);
     modCopyThread->start();
     ui->progressBar->setValue(GetInstallPercent(MAIN_COPY));
@@ -123,8 +141,9 @@ void InstallWindow::handleMainDLLCopySuccess()
 {
 	QString kenshiDir = options.GetKenshiInstallDir();
     std::string dllWritePath = kenshiDir.toStdString() + "CompressToolsLib.dll";
-    CopyThread *modCopyThread = new CopyThread("tools/CompressToolsLib.dll", dllWritePath, this);
+	CopyThread *modCopyThread = CopyThread::CreateCopyThread("tools/CompressToolsLib.dll", dllWritePath, this);
     connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+	connect(modCopyThread, &CopyThread::resultCancel, this, &InstallWindow::handleCancel);
     connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleSecondaryDLLCopySuccess);
     modCopyThread->start();
     ui->progressBar->setValue(GetInstallPercent(SECONDARY_COPY));
@@ -138,8 +157,9 @@ void InstallWindow::handleSecondaryDLLCopySuccess()
     // no error-check - checking if the tut file copy is successful is a better acid test
     system(command.c_str());
     std::string tutWritePath = kenshiDir.toStdString() + "RE_Kenshi/game_speed_tutorial.png";
-    CopyThread *modCopyThread = new CopyThread("tools/game_speed_tutorial.png", tutWritePath, this);
-    connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+	CopyThread *modCopyThread = CopyThread::CreateCopyThread("tools/game_speed_tutorial.png", tutWritePath, this);
+	connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
+	connect(modCopyThread, &CopyThread::resultCancel, this, &InstallWindow::handleCancel);
     connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleTutorialImageCopySuccess);
     modCopyThread->start();
     ui->progressBar->setValue(GetInstallPercent(TUT_IMAGE_COPY));
@@ -277,6 +297,19 @@ void InstallWindow::handleError(QString errorStr)
     ui->label->setText(tr("Error: ") + errorStr);
     error = true;
     ui->closeButton->setEnabled(true);
+}
+
+void InstallWindow::handleCancel()
+{
+	// uninstall to unbork
+	QMessageBox msgBox(QMessageBox::Warning, tr("Installation cancelled"), tr("Installation was cancelled.")
+					   + tr("\nAny copied files will now be uninstalled."),
+					   QMessageBox::Ok);
+	msgBox.exec();
+
+	UninstallWindow* uninstallWindow = new UninstallWindow(MainWindow::UNINSTALL, options);
+	uninstallWindow->show();
+	this->close();
 }
 
 InstallWindow::~InstallWindow()

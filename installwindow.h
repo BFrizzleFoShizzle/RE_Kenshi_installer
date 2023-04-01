@@ -3,7 +3,8 @@
 
 #include <QDialog>
 
-#include <installoptions.h>
+#include "installoptions.h"
+#include "copythread.h"
 
 namespace Ui {
 class InstallWindow;
@@ -23,6 +24,7 @@ private slots:
 private:
     Ui::InstallWindow *ui;
     void handleError(QString error);
+	void handleCancel();
     void handleShellError(int error);
     void handleExeHash(QString hash);
     void handleBackupCopySuccess();

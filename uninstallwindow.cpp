@@ -11,6 +11,10 @@
 #include "diskutil.h"
 
 #include "bugs.h"
+#include "process.h"
+
+#include <QFileInfo>
+#include <QMessageBox>
 
 enum UninstallStep
 {
@@ -75,6 +79,18 @@ UninstallWindow::UninstallWindow(MainWindow::InstallerAction action, InstallOpti
 
 void UninstallWindow::handleExeHash(QString hash)
 {
+	QFileInfo executableInfo(options.kenshiExePath);
+	// make sure Kenshi isn't running
+	while(IsProcessRunning(executableInfo.fileName().toStdWString()))
+	{
+		QMessageBox kenshiIsRunningMsgbox;
+		kenshiIsRunningMsgbox.setIcon(QMessageBox::Warning);
+		kenshiIsRunningMsgbox.setWindowTitle(QObject::tr("Please close Kenshi"));
+		kenshiIsRunningMsgbox.setText(QString(QObject::tr("Kenshi is running - please close Kenshi\n") + executableInfo.fileName()));
+		kenshiIsRunningMsgbox.setStandardButtons(QMessageBox::Ok);
+		kenshiIsRunningMsgbox.setDefaultButton(QMessageBox::Ok);
+		kenshiIsRunningMsgbox.exec();
+	}
 	QString kenshiDir = options.GetKenshiInstallDir();
     if(HashThread::HashIsModded(hash.toStdString()))
     {
@@ -95,8 +111,9 @@ void UninstallWindow::handleExeHash(QString hash)
         std::ifstream configBackupFile(pluginsConfigBackupPath);
         if(configBackupFile.is_open())
         {
-            CopyThread *configRestoreThread = new CopyThread(pluginsConfigBackupPath, pluginsConfigPath, this);
+			CopyThread *configRestoreThread = CopyThread::CreateCopyThread(pluginsConfigBackupPath, pluginsConfigPath, this);
             connect(configRestoreThread, &CopyThread::resultError, this, &UninstallWindow::handleError);
+			connect(configRestoreThread, &CopyThread::resultCancel, this, &UninstallWindow::handleCancel);
             connect(configRestoreThread, &CopyThread::resultSuccess, this, &UninstallWindow::handleExeRestored);
             configRestoreThread->start();
             ui->progressBar->setValue(GetUninstallPercent(RESTORE_CONFIG));
@@ -126,8 +143,9 @@ void UninstallWindow::handleBackupExeHash(QString hash)
         ui->label->setText(tr("Backup hash matches, restoring vanilla kenshi EXE."));
 		QString kenshiDir = options.GetKenshiInstallDir();
         std::string exeBackupPath = kenshiDir.toStdString() + "kenshi_x64_vanilla.exe";
-		CopyThread *exeRestoreThread = new CopyThread(exeBackupPath, options.kenshiExePath.toStdString(), this);
+		CopyThread *exeRestoreThread = CopyThread::CreateCopyThread(exeBackupPath, options.kenshiExePath.toStdString(), this);
         connect(exeRestoreThread, &CopyThread::resultError, this, &UninstallWindow::handleError);
+		connect(exeRestoreThread, &CopyThread::resultCancel, this, &UninstallWindow::handleCancel);
         // RE_Kenshi 0.1-0.1.1 - don't need to revert plugin config file
         connect(exeRestoreThread, &CopyThread::resultSuccess, this, &UninstallWindow::handleExeRestored);
         exeRestoreThread->start();
@@ -141,11 +159,18 @@ void UninstallWindow::handleBackupExeHash(QString hash)
     }
 }
 
+// delete file relative to Kenshi install dir with success check (`del` command doesn't raise error level on fail)
+static std::string generateDeleteCommand(std::string filePath)
+{
+	return "del \"" + filePath + "\" && if exist \"" + filePath + "\" exit 2";
+}
+
 void UninstallWindow::handleExeRestored()
 {
     ui->label->setText(tr("Old files restored. Removing RE_Kenshi DLL..."));
 	QString kenshiDir = options.GetKenshiInstallDir();
-    std::string command = "del \"" + kenshiDir.replace('/','\\').toStdString() + "RE_Kenshi.dll\"";
+	std::string filePath = kenshiDir.replace('/','\\').toStdString() + "RE_Kenshi.dll";
+	std::string command = generateDeleteCommand(kenshiDir.replace('/','\\').toStdString() + "RE_Kenshi.dll");
     ShellThread *dllDeleteThread = new ShellThread(command);
     connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
     connect(dllDeleteThread, &ShellThread::resultSuccess, this, &UninstallWindow::handleMainDLLDeleteSuccess);
@@ -157,7 +182,7 @@ void UninstallWindow::handleMainDLLDeleteSuccess()
 {
     ui->label->setText(tr("Old files restored. Removing CompressTools DLL..."));
 	QString kenshiDir = options.GetKenshiInstallDir();
-    std::string command = "del \"" + kenshiDir.replace('/','\\').toStdString() + "CompressToolsLib.dll\"";
+	std::string command = generateDeleteCommand(kenshiDir.replace('/','\\').toStdString() + "CompressToolsLib.dll");
     ShellThread *dllDeleteThread = new ShellThread(command);
     connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
     connect(dllDeleteThread, &ShellThread::resultSuccess, this, &UninstallWindow::handleSecondaryDLLDeleteSuccess);
@@ -169,7 +194,7 @@ void UninstallWindow::handleSecondaryDLLDeleteSuccess()
 {
     ui->label->setText(tr("Old files restored. Removing RE_Kenshi data..."));
 	QString kenshiDir = options.GetKenshiInstallDir();
-    std::string command = "del \"" + kenshiDir.replace('/','\\').toStdString() + "RE_Kenshi\\game_speed_tutorial.png\"";
+	std::string command = generateDeleteCommand(kenshiDir.replace('/','\\').toStdString() + "RE_Kenshi\\game_speed_tutorial.png");
     ShellThread *dllDeleteThread = new ShellThread(command);
     connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
     connect(dllDeleteThread, &ShellThread::resultSuccess, this, &UninstallWindow::handleTutorialImageDeleteSuccess);
@@ -190,7 +215,7 @@ void UninstallWindow::handleTutorialImageDeleteSuccess()
     {
         heightmapFile.close();
         ui->label->setText(tr("Old files restored. Removing compressed heightmap..."));
-        std::string command = "del \"" + heightmapPath + "\"";
+		std::string command = generateDeleteCommand(heightmapPath);
         ShellThread *dllDeleteThread = new ShellThread(command);
         connect(dllDeleteThread, &ShellThread::resultError, this, &UninstallWindow::handleShellError);
         connect(dllDeleteThread, &ShellThread::resultSuccess, this, &UninstallWindow::handleSecondaryDLLDeleteSuccess);
@@ -235,6 +260,10 @@ void UninstallWindow::handleShellError(int errorVal)
 {
     Bugs::ReportBug("UninstallWindow", GetUninstallStepFromPercent(ui->progressBar->value()), "Error: Shell command returned: " + std::to_string(errorVal));
     QString text = tr("Error: Shell command returned: ") + QString::number(errorVal) + tr(" install aborted.");
+	if(GetUninstallStepFromPercent(ui->progressBar->value()) <= RESTORE_CONFIG)
+		text += tr("\nRE_Kenshi is probably still installed and functional.");
+	else
+		text += tr("\nRE_Kenshi has been disabled and may need reinstalling.");
     ui->label->setText(text);
     this->error = true;
     ui->closeButton->setEnabled(true);
@@ -246,6 +275,17 @@ void UninstallWindow::handleError(QString errorStr)
     ui->label->setText(tr("Error: ") + errorStr);
     this->error = true;
     ui->closeButton->setEnabled(true);
+}
+
+void UninstallWindow::handleCancel()
+{
+	QString label = tr("Uninstall cancelled.");
+	if(GetUninstallStepFromPercent(ui->progressBar->value()) <= RESTORE_CONFIG)
+		label += tr("\nRE_Kenshi is probably still installed and functional.");
+	else
+		label += tr("\nRE_Kenshi has been disabled and may need reinstalling.");
+
+	ui->label->setText(label);
 }
 
 UninstallWindow::~UninstallWindow()
