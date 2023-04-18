@@ -11,7 +11,15 @@
 
 #include "optionswindow.h"
 #include "uninstallwindow.h"
- #include <qlayout.h>
+#include <qlayout.h>
+
+std::vector<QString> requiredFiles = {"tools/RE_kenshi.dll",
+						  "tools/CompressToolsLib.dll",
+						  "tools/CompressTools.exe",
+						  "tools/game_speed_tutorial.png",
+						  "tools/locale",
+						  "RE_Kenshi_de.qm",
+						  "RE_Kenshi_ru.qm"};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -45,6 +53,24 @@ void MainWindow::on_kenshiDirButton_clicked()
 
 void MainWindow::on_nextButton_clicked()
 {
+	// check all required files exist
+	for(QString file : requiredFiles)
+	{
+		QFileInfo check_file(file);
+
+		if(!check_file.exists())
+		{
+			QMessageBox errorMessage(this);
+			errorMessage.setWindowTitle(QObject::tr("Error"));
+			errorMessage.setIcon(QMessageBox::Critical);
+			errorMessage.setText(tr("Missing file: ") + file
+						+ "\n" + tr("Make sure all files in the RE_Kenshi installer archive are extracted to the same folder as RE_Kenshi_installer.exe"));
+			errorMessage.setStandardButtons(QMessageBox::Ok);
+			errorMessage.exec();
+			return;
+		}
+	}
+
     // HACK if uninstall button is active, previous version is installed, so we're doing an upgrade
     InstallerAction action = ui->uninstallButton->isEnabled() ? InstallerAction::UPGRADE : InstallerAction::INSTALL;
 
