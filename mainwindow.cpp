@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSettings>
+#include <QFile>
 #include <fstream>
 #include <qtranslator.h>
 
@@ -37,6 +39,54 @@ MainWindow::MainWindow(QWidget *parent)
     // Dumb workaround to create a multiline button
     QGridLayout* layout = new QGridLayout(ui->kenshiDirButton);
     layout->addWidget(ui->kenshiDirButtonLabel);
+
+	// autofill Kenshi install dir
+	// Inspired by the OCS https://github.com/lmaydev/OpenConstructionSet/tree/main/OpenConstructionSet/Installations/Locators
+	QString defaultPath = "";
+	try
+	{
+		// GOG is easy - just read registry entry
+		QSettings registryGOG("HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\GOG.com\\Games\\1193046833", QSettings::NativeFormat);
+		if(registryGOG.contains("exe"))
+		{
+			defaultPath = registryGOG.value("exe").toString();
+		}
+		// Steam is more compicated (and takes precedence over GOG)
+		QSettings registrySteam("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Valve\\Steam", QSettings::NativeFormat);
+		if(registrySteam.contains("InstallPath"))
+		{
+			QString steamInstallDir = registrySteam.value("InstallPath").toString();
+			QStringList dirsToCheck;
+			QFile libraryFolders(QDir(steamInstallDir).filePath("steamapps/libraryfolders.vdf"));
+			// Tweaked from https://github.com/lmaydev/OpenConstructionSet/blob/main/OpenConstructionSet/Installations/Locators/SteamLocator.cs
+			QRegularExpression  regex("^\\s+\"path\"\\s+\"(.+)\"");
+			if (libraryFolders.open(QIODevice::ReadOnly | QIODevice::Text))
+			{
+				while (!libraryFolders.atEnd()) {
+					QString line = libraryFolders.readLine();
+					QRegularExpressionMatch match = regex.match(line);
+					if(match.hasMatch())
+					{
+						// "\\" should be the only path-valid escape code in VDF (which causes problems in shell commands, so we swap it out)
+						dirsToCheck.append(match.captured(1).replace("\\\\", "\\"));
+					}
+				}
+			}
+			for(const QString& path : dirsToCheck)
+			{
+				QString testPath = QDir(path).filePath("steamapps/common/Kenshi/Kenshi_x64.exe");
+				QFileInfo test_file(testPath);
+				if(test_file.exists())
+					defaultPath = testPath;
+			}
+		}
+	}
+	catch(...)
+	{
+		// do nothing
+	}
+
+	ui->kenshiDirText->setText(defaultPath);
 }
 
 MainWindow::~MainWindow()
