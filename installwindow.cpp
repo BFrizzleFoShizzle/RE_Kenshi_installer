@@ -153,9 +153,14 @@ void InstallWindow::handleSecondaryDLLCopySuccess()
 {
 	QString kenshiDir = options.GetKenshiInstallDir();
     // Create folder (done in-place as it should be instant)
-    std::string command = "mkdir \"" + kenshiDir.toStdString() + "RE_Kenshi\"";
-    // no error-check - checking if the tut file copy is successful is a better acid test
+	std::string command = "mkdir \"" + kenshiDir.toStdString() + "RE_Kenshi\"";
     system(command.c_str());
+	// check if the folder was created
+	QFileInfo check_folder(kenshiDir + "RE_Kenshi/");
+	if(!check_folder.exists())
+	{
+		handleError(tr("Could not create folder ") + kenshiDir + "RE_Kenshi");
+	}
     std::string tutWritePath = kenshiDir.toStdString() + "RE_Kenshi/game_speed_tutorial.png";
 	CopyThread *modCopyThread = CopyThread::CreateCopyThread("tools/game_speed_tutorial.png", tutWritePath, this);
 	connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
