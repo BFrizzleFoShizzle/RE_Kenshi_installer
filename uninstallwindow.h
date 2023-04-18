@@ -23,6 +23,7 @@ private slots:
 private:
     Ui::InstallWindow *ui;
     void handleError(QString error);
+	void handleCancel();
     void handleShellError(int error);
     void handleExeHash(QString hash);
     void handleBackupExeHash(QString hash);

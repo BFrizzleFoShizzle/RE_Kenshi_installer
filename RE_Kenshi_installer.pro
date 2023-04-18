@@ -18,6 +18,7 @@ SOURCES += \
     mainwindow.cpp \
     md5.cpp \
     optionswindow.cpp \
+    process.cpp \
     shellthread.cpp \
     uninstallwindow.cpp
 
@@ -34,6 +35,7 @@ HEADERS += \
     md5.h \
     md5_loc.h \
     optionswindow.h \
+    process.h \
     shellthread.h \
     uninstallwindow.h
 
