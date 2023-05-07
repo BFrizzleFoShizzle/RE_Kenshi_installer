@@ -17,7 +17,7 @@ struct InstallOptions
 	}
 	QString GetKenshiInstallDir()
 	{
-		return kenshiExePath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+		return kenshiExePath.toLower().split("kenshi_gog_x64.exe")[0].split("kenshi_x64.exe")[0];
 	}
 	QString kenshiExePath;
 	bool compressHeightmap;

@@ -182,7 +182,7 @@ bool IsModInstalled(QString kenshiEXEHash, QString kenshiEXEPath)
         return true;
 
     // if backup file + DLL exists, mod is installed
-	QString kenshiDir = kenshiEXEPath.split("kenshi_GOG_x64.exe")[0].split("kenshi_x64.exe")[0];
+	QString kenshiDir = kenshiEXEPath.toLower().split("kenshi_gog_x64.exe")[0].split("kenshi_x64.exe")[0];
     std::string pluginsConfigBackupPath = kenshiDir.toStdString() + "Plugins_x64_vanilla.cfg";
     std::string dllPath = kenshiDir.toStdString() + "RE_Kenshi.dll";
     std::ifstream configBackupFile(pluginsConfigBackupPath);
