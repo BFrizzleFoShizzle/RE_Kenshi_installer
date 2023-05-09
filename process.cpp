@@ -68,9 +68,7 @@ bool IsFileLocked(const std::string fileName)
 bool IsProcessRunning(const std::wstring targetProcessName)
 {
 	HANDLE hProcessSnap;
-	HANDLE hProcess;
 	PROCESSENTRY32 pe32;
-	DWORD dwPriorityClass;
 
 	// Take a snapshot of all processes in the system.
 	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
