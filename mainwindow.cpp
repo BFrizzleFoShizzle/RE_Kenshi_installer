@@ -20,14 +20,14 @@ std::vector<QString> requiredFiles = {"tools/RE_kenshi.dll",
 						  "tools/CompressTools.exe",
 						  "tools/game_speed_tutorial.png",
 						  "tools/locale",
-						  "RE_Kenshi_de.qm",
-						  "RE_Kenshi_ru.qm"};
+						  "translations/RE_Kenshi_de.qm",
+						  "translations/RE_Kenshi_ru.qm"};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    translator.load(QString::fromStdString("./RE_Kenshi_" + QLocale::system().name().toStdString().substr(0,2)));
+	translator.load(QString::fromStdString("./translations/RE_Kenshi_" + QLocale::system().name().toStdString().substr(0,2)));
     QApplication::instance()->installTranslator(&translator);
     ui->setupUi(this);
 	ui->comboBox->addItem("English", "en");
@@ -245,7 +245,7 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
     QString language = QString(ui->comboBox->currentData().toString());
     qDebug(language.toStdString().c_str());
     QApplication::instance()->removeTranslator(&translator);
-    translator.load("./RE_Kenshi_" + language);
+	translator.load("./translations/RE_Kenshi_" + language);
     QApplication::instance()->installTranslator(&translator);
     ui->retranslateUi(this);
     // Apparently, have to do this manually...

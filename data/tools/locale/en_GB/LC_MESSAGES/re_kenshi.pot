@@ -1,0 +1,184 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-24 09:44+1300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:602
+msgid "Speed "
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:934
+msgid "RE_Kenshi Menu"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:952
+msgid "RE_Kenshi Bug Report"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:960
+msgid ""
+"Your report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with "
+"the following information:"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:961
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:99
+msgid ""
+"\n"
+"RE_Kenshi version: "
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:962
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:100
+msgid ""
+"\n"
+"Kenshi version: "
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:963
+msgid ""
+"\n"
+"Your bug description"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:964
+msgid ""
+"\n"
+"\n"
+"Please describe the bug:"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:969
+msgid "Send report"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:974
+msgid "Settings"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:981
+msgid "Report bug"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:987
+msgid "Automatically check for updates"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:994
+msgid "Open RE_Kenshi settings on startup"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1001
+msgid "Fix Kenshi's RNG bug"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1008
+msgid "Increase max camera distance"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1015
+msgid "Cache shaders"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1022
+msgid "Log file IO"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1029
+msgid "Log audio IDs/events/switches/states"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1037
+msgid "To enable, reinstall RE_Kenshi and check \"Compress Heightmap\""
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1042
+msgid "[TOGGLE MAY CRASH] Use compressed heightmap"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1067
+msgid "Attack slots ("
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1090
+msgid "Max. faction size ("
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1115
+msgid "Max. squad size ("
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1140
+msgid "Max. squads ("
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1151
+msgid "Use custom game speed controls"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1160
+msgid "Game speeds"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1162
+msgid "Add game speed"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1168
+msgid "Debug log"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1253
+msgid "RE_Kenshi settings"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1474
+msgid " - [NOT SUPPORTED, MOD DISABLED]"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:96
+msgid "Kenshi has crashed."
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:97
+msgid ""
+"\n"
+"Would you like to send a crash report to the RE_Kenshi team?"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:98
+msgid ""
+"\n"
+"Your report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with "
+"the following information:"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:101
+msgid ""
+"\n"
+"RE_Kenshi's log"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:104
+msgid ""
+"\n"
+"Kenshi's crashdump ("
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:107
+msgid "RE_Kenshi Crash Reporter"
+msgstr ""
