@@ -2,7 +2,7 @@
 #define PROCESS_H
 #include <string>
 
-bool IsProcessRunning(const std::wstring processName);
+bool IsProcessRunning(std::wstring processName);
 
 bool IsFileLocked(const std::string fileName);
 

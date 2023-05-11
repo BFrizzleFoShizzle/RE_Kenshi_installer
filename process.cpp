@@ -1,4 +1,5 @@
 #include "process.h"
+#include <algorithm>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -65,8 +66,9 @@ bool IsFileLocked(const std::string fileName)
 	return isFileLocked;
 }
 
-bool IsProcessRunning(const std::wstring targetProcessName)
+bool IsProcessRunning(std::wstring targetProcessName)
 {
+	std::transform(targetProcessName.begin(), targetProcessName.end(), targetProcessName.begin(), ::tolower);
 	HANDLE hProcessSnap;
 	PROCESSENTRY32 pe32;
 
@@ -89,6 +91,7 @@ bool IsProcessRunning(const std::wstring targetProcessName)
 	do
 	{
 		std::wstring fileName = pe32.szExeFile;
+		std::transform(fileName.begin(), fileName.end(), fileName.begin(), ::tolower);
 		if(fileName == targetProcessName)
 		{
 			// found - cleanup
