@@ -41,6 +41,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QTranslator translator;
+	QTranslator mainTranslator;
+	QTranslator baseTranslator;
 };
 #endif // MAINWINDOW_H

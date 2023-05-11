@@ -20,6 +20,8 @@ std::vector<QString> requiredFiles = {"tools/RE_kenshi.dll",
 						  "tools/CompressTools.exe",
 						  "tools/game_speed_tutorial.png",
 						  "tools/locale",
+						  "translations/qt_de.qm",
+						  "translations/qt_de.qm",
 						  "translations/RE_Kenshi_de.qm",
 						  "translations/RE_Kenshi_ru.qm"};
 
@@ -27,14 +29,16 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-	translator.load(QString::fromStdString("./translations/RE_Kenshi_" + QLocale::system().name().toStdString().substr(0,2)));
-    QApplication::instance()->installTranslator(&translator);
+	QString language = QLocale::system().name().mid(0,2);
+	baseTranslator.load("./translations/qt_" + language);
+	QApplication::instance()->installTranslator(&baseTranslator);
+	mainTranslator.load("./translations/RE_Kenshi_" + language);
+	QApplication::instance()->installTranslator(&mainTranslator);
     ui->setupUi(this);
 	ui->comboBox->addItem("English", "en");
 	ui->comboBox->addItem("Deutsch", "de");
-    ui->comboBox->addItem("Русский", "ru");
-    std::string language = QLocale::system().name().toStdString().substr(0,2);
-    ui->comboBox->setCurrentIndex(ui->comboBox->findData(QString::fromStdString(language)));
+	ui->comboBox->addItem("Русский", "ru");
+	ui->comboBox->setCurrentIndex(ui->comboBox->findData(language));
 
     // Dumb workaround to create a multiline button
     QGridLayout* layout = new QGridLayout(ui->kenshiDirButton);
@@ -207,7 +211,6 @@ void MainWindow::handleExeHash(QString hash)
         // if mod is installed, enable uninstall
         if(IsModInstalled(hash, ui->kenshiDirText->text()))
             ui->uninstallButton->setEnabled(true);
-
     }
     else
     {
@@ -242,11 +245,15 @@ void MainWindow::on_uninstallButton_clicked()
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
 {
-    QString language = QString(ui->comboBox->currentData().toString());
-    qDebug(language.toStdString().c_str());
-    QApplication::instance()->removeTranslator(&translator);
-	translator.load("./translations/RE_Kenshi_" + language);
-    QApplication::instance()->installTranslator(&translator);
+	QString language = QString(ui->comboBox->currentData().toString());
+	QApplication::instance()->removeTranslator(&baseTranslator);
+	baseTranslator.load("./translations/qt_" + language);
+	QApplication::instance()->installTranslator(&baseTranslator);
+
+	QApplication::instance()->removeTranslator(&mainTranslator);
+	mainTranslator.load("./translations/RE_Kenshi_" + language);
+	QApplication::instance()->installTranslator(&mainTranslator);
+
     ui->retranslateUi(this);
     // Apparently, have to do this manually...
     ui->outputLabel->setText(tr("Please select kenshi executable"));
