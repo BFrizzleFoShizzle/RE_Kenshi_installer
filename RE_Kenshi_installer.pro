@@ -9,34 +9,37 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    basethread.cpp \
     bugs.cpp \
-    copythread.cpp \
     diskutil.cpp \
     hashthread.cpp \
+    installthread.cpp \
     installwindow.cpp \
     main.cpp \
     mainwindow.cpp \
     md5.cpp \
     optionswindow.cpp \
     process.cpp \
-    shellthread.cpp \
+    uninstallthread.cpp \
     uninstallwindow.cpp
 
 HEADERS += \
     Release_Assert.h \
+    basethread.h \
     bugs.h \
-    copythread.h \
+    config.h \
     discord.h \
     diskutil.h \
     hashthread.h \
     installoptions.h \
+    installthread.h \
     installwindow.h \
     mainwindow.h \
     md5.h \
     md5_loc.h \
     optionswindow.h \
     process.h \
-    shellthread.h \
+    uninstallthread.h \
     uninstallwindow.h
 
 FORMS += \

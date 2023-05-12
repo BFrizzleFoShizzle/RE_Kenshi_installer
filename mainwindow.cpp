@@ -8,7 +8,6 @@
 #include <qtranslator.h>
 
 #include "hashthread.h"
-#include "copythread.h"
 #include "diskutil.h"
 
 #include "optionswindow.h"

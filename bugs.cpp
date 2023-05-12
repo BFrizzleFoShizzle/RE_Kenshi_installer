@@ -8,6 +8,7 @@
 #include <QEventLoop>
 #include <QUrl>
 #include <QUrlQuery>
+#include <QHttpPart>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QJsonObject>
@@ -77,8 +78,7 @@ static std::string GetUUIDHash()
 	return finalHash;
 }
 
-
-void Bugs::ReportBug(std::string window, int step, std::string error)
+void Bugs::ReportBug(std::string window, int step, std::string error, std::string logs)
 {
 	// get user consent
 	QMessageBox consentBox;
@@ -94,8 +94,10 @@ void Bugs::ReportBug(std::string window, int step, std::string error)
 					   + QObject::tr("\nWindow: ") + QString::fromStdString(window) // the name of the window - e.g. InstallerWindow, UninstallerWindow
 					   + QObject::tr("\nInstallation step: ") + QString::number(step)
 					   + QObject::tr("\nUUID hash: ") + hash + QObject::tr(" (optional - allows the developer to know all your reports come from the same machine)")
+					   + QObject::tr("\nInstall log (press \"Show Details\"  to view)")
 					   + QObject::tr("\nError message: ")
 					   + "\n" + QString::fromStdString(error) + "\n");
+	consentBox.setDetailedText("Installer log:\n" + QString::fromStdString(logs));
 	consentBox.setCheckBox(&uuidCheckBox);
 	consentBox.setStandardButtons(QMessageBox::Yes);
 	consentBox.addButton(QMessageBox::No);
@@ -111,30 +113,31 @@ void Bugs::ReportBug(std::string window, int step, std::string error)
 	if (uuidCheckBox.isChecked())
 		message += "\nUUID: " + hash;
 	message += QString::fromStdString("\nWindow: " + window
-		+ "\nStep: " + std::to_string(step) + "\nError message:");
-
-	QUrl url = QUrl(QString::fromStdString(installerBugDiscordWebHookURL));
-	QNetworkAccessManager * mgr = new QNetworkAccessManager();
-
-	QNetworkRequest request(url);
-
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+		+ "\nStep: " + std::to_string(step) + "\nError message:\n" + error);
 
 	QJsonObject obj;
-	obj["content"] = QString::fromStdString("<@" + discordID + ">");
-	// 1st embed is meta info
-	QJsonObject embed1;
+	obj["content"] = QString::fromStdString("<@" + discordID + ">")
+			+  "\n```" + message + "```";
 
-	embed1["description"] = message;
+	QHttpPart textPart;
+	textPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"payload_json\""));
+	textPart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/json"));
+	textPart.setBody(QJsonDocument(obj).toJson(QJsonDocument::Compact));/* toto is the name I give to my file in the server */
 
-	QJsonArray embeds;
-	embeds.append(embed1);
-	// 2nd embed is error message
-	QJsonObject embed2;
-	embed2["description"] = QString::fromStdString(error);
-	embeds.append(embed2);
-	obj["embeds"] = embeds;
-	QNetworkReply* reply = mgr->post(request, QJsonDocument(obj).toJson(QJsonDocument::Compact));
+	QHttpPart logsPart;
+	logsPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"file1\"; filename=\"log.txt\""));
+	logsPart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/octet-stream"));
+	logsPart.setBody(QByteArray(logs.c_str()));
+
+	QHttpMultiPart multiPart(QHttpMultiPart::FormDataType);
+	multiPart.append(textPart);
+	multiPart.append(logsPart);
+
+	QUrl url = QUrl(QString::fromStdString(installerBugDiscordWebHookURL));
+	QNetworkRequest request(url);
+
+	QNetworkAccessManager* mgr = new QNetworkAccessManager();
+	QNetworkReply* reply = mgr->post(request, &multiPart);
 
 	QEventLoop loop;
 	reply->connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);

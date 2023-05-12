@@ -5,7 +5,7 @@
 
 namespace Bugs
 {
-    void ReportBug(std::string window, int step, std::string error);
+	void ReportBug(std::string window, int step, std::string error, std::string logs = "");
 };
 
 #endif // BUGS_H

@@ -5,6 +5,9 @@
 #include <mainwindow.h>
 #include <installoptions.h>
 
+class UninstallThread;
+class QMessageBox;
+
 namespace Ui {
 class InstallWindow;
 }
@@ -15,26 +18,29 @@ class UninstallWindow : public QDialog
 
 public:
 	explicit UninstallWindow(MainWindow::InstallerAction action, InstallOptions options, QWidget *parent = nullptr);
-    ~UninstallWindow();
+	~UninstallWindow();
+
+signals:
+	// Note: this only works if MessageBoxes are submitted one at a time
+	void messageBoxFinished();
 
 private slots:
-    void on_closeButton_clicked();
+	void on_closeButton_clicked();
 
 private:
     Ui::InstallWindow *ui;
-    void handleError(QString error);
-	void handleCancel();
-    void handleShellError(int error);
-    void handleExeHash(QString hash);
-    void handleBackupExeHash(QString hash);
-    void handleExeRestored();
-    void handleMainDLLDeleteSuccess();
-    void handleSecondaryDLLDeleteSuccess();
-    void handleTutorialImageDeleteSuccess();
-	void handleCompressedHeightmapDeleteSuccess();
+	void handleError(bool modIsDisabled);
+	void handleCancel(bool installIsBroken);
+	void handleProgressUpdate(int percent);
+	void handleStatusUpdate(QString text);
+	void handleLog(QString text);
+	void handleBugReport(int step, QString info);
+	void showMessageBox(QMessageBox* msgBox);
+	void handleUninstallSuccess();
 	MainWindow::InstallerAction action;
 	InstallOptions options;
-	bool error;
+	UninstallThread *thread;
+	QString log;
 };
 
 #endif // UNINSTALLWINDOW_H

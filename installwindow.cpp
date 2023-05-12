@@ -9,312 +9,118 @@
 #include "installwindow.h"
 #include "ui_installwindow.h"
 
-#include "copythread.h"
-#include "hashthread.h"
-#include "shellthread.h"
-#include "process.h"
+#include "installthread.h"
 #include "uninstallwindow.h"
 #include "mainwindow.h"
 
 #include "bugs.h"
 
-enum InstallStep
-{
-    HASH_CHECK,
-    BACKUP_COPY,
-    MAIN_COPY,
-    SECONDARY_COPY,
-    TUT_IMAGE_COPY,
-    MOD_SETTINGS_UPDATE,
-    COMPRESS,
-    // hack to make compression take most of the bar
-    COMPRESS_2,
-    COMPRESS_3,
-    COMPRESS_4,
-    COMPRESS_5,
-    CONFIG_APPEND,
-    DONE
-};
-
-int GetInstallPercent(InstallStep step)
-{
-    return (100 * step) / InstallStep::DONE;
-}
-
-InstallStep GetInstallStepFromPercent(int percent)
-{
-    int currError = 100;
-    int bestStep = -1;
-    for(int i=0;i<=InstallStep::DONE;++i)
-    {
-        if(std::abs(percent - GetInstallPercent((InstallStep)i)) < currError)
-        {
-            currError = std::abs(percent - GetInstallPercent((InstallStep)i));
-            bestStep = i;
-        }
-    }
-    return (InstallStep)bestStep;
-}
-
-InstallWindow::InstallWindow(InstallOptions  options, QWidget *parent) :
+InstallWindow::InstallWindow(InstallOptions  options, QWidget *parent, QString logs) :
     QDialog(parent),
-    ui(new Ui::InstallWindow)
+	ui(new Ui::InstallWindow),
+	log(logs)
 {
     ui->setupUi(this);
 
-	error = false;
-
 	this->options = options;
 
-    ui->label->setText(tr("Double-checking hash..."));
+	log += "INSTALL\n";
 
-	HashThread *hashThread = new HashThread(options.kenshiExePath.toStdString());
-    connect(hashThread, &HashThread::resultError, this, &InstallWindow::handleError);
-    connect(hashThread, &HashThread::resultSuccess, this, &InstallWindow::handleExeHash);
-    hashThread->start();
+	thread = new InstallThread(this, options);
+	connect(thread, &InstallThread::resultError, this, &InstallWindow::handleError);
+	connect(thread, &InstallThread::resultCancel, this, &InstallWindow::handleCancel);
+	connect(thread, &InstallThread::resultSuccess, this, &InstallWindow::handleSuccess);
+	connect(thread, &InstallThread::progressUpdate, this, &InstallWindow::handleProgressUpdate);
+	connect(thread, &InstallThread::statusUpdate, this, &InstallWindow::handleStatusUpdate);
+	connect(thread, &InstallThread::log, this, &InstallWindow::handleLog);
+	connect(thread, &InstallThread::reportBug, this, &InstallWindow::handleBugReport);
+	connect(thread, &InstallThread::showMessageBox, this, &InstallWindow::showMessageBox);
+	thread->start();
 }
 
-void InstallWindow::handleExeHash(QString hash)
+void InstallWindow::showMessageBox(QMessageBox* msgBox)
 {
-	QFileInfo executableInfo(options.kenshiExePath);
-	// make sure Kenshi isn't running
-	while(IsProcessRunning(executableInfo.fileName().toStdWString()))
-	{
-		QMessageBox kenshiIsRunningMsgbox;
-		kenshiIsRunningMsgbox.setIcon(QMessageBox::Warning);
-		kenshiIsRunningMsgbox.setWindowTitle(QObject::tr("Please close Kenshi"));
-		kenshiIsRunningMsgbox.setText(QString(QObject::tr("Kenshi is running - please close Kenshi\n") + executableInfo.fileName()));
-		kenshiIsRunningMsgbox.setStandardButtons(QMessageBox::Ok);
-		kenshiIsRunningMsgbox.setDefaultButton(QMessageBox::Ok);
-		kenshiIsRunningMsgbox.exec();
-	}
-    if(HashThread::HashIsModded(hash.toStdString()))
-    {
-        // undo EXE modifications
-        ui->label->setText(tr("Hash matches. Uninstalling old RE_Kenshi modifications..."));
-        // TODO
-    }
-    else if(HashThread::HashSupported(hash.toStdString()))
-    {
-        ui->label->setText(tr("Hash matches. Making kenshi plugin config backup..."));
-		QString kenshiDir = options.GetKenshiInstallDir();
-        std::string pluginsConfigPath = kenshiDir.toStdString() + "Plugins_x64.cfg";
-        std::string pluginsConfigBackupPath = kenshiDir.toStdString() + "Plugins_x64_vanilla.cfg";
-        std::ifstream configBackupFile(pluginsConfigBackupPath);
-        if(configBackupFile.is_open())
-        {
-            ui->label->setText(tr("Plugin config already backed up, skipping..."));
-            handleBackupCopySuccess();
-        }
-        else
-        {
-			CopyThread *exeBackupThread = CopyThread::CreateCopyThread(pluginsConfigPath, pluginsConfigBackupPath, this);
-			connect(exeBackupThread, &CopyThread::resultError, this, &InstallWindow::handleError);
-			connect(exeBackupThread, &CopyThread::resultCancel, this, &InstallWindow::handleCancel);
-            connect(exeBackupThread, &CopyThread::resultSuccess, this, &InstallWindow::handleBackupCopySuccess);
-            exeBackupThread->start();
-            ui->progressBar->setValue(GetInstallPercent(BACKUP_COPY));
-        }
-    }
-    else
-    {
-        ui->label->setText("Hash doesn't match! This shouldn't be possible! No files changed, aborted. Mod not installed. It is now safe to close this window.");
-        ui->progressBar->setValue(GetInstallPercent(DONE));
-        return;
-    }
+	// workaround for dumb threading problems
+	QMessageBox localMsgBox;
+	localMsgBox.setIcon(msgBox->icon());
+	localMsgBox.setWindowTitle(msgBox->windowTitle());
+	localMsgBox.setText(msgBox->text());
+	localMsgBox.setStandardButtons(msgBox->standardButtons());
+	localMsgBox.setDefaultButton(msgBox->defaultButton());
+	msgBox->setResult(localMsgBox.exec());
+
+	emit messageBoxFinished();
 }
 
-void InstallWindow::handleBackupCopySuccess()
+void InstallWindow::handleBugReport(int step, QString info)
 {
-	QString kenshiDir = options.GetKenshiInstallDir();
-    std::string dllWritePath = kenshiDir.toStdString() + "RE_Kenshi.dll";
-    ui->label->setText(tr("Copying mod files..."));
-	CopyThread *modCopyThread = CopyThread::CreateCopyThread("tools/RE_Kenshi.dll", dllWritePath, this);
-    connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
-	connect(modCopyThread, &CopyThread::resultCancel, this, &InstallWindow::handleCancel);
-    connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleMainDLLCopySuccess);
-    modCopyThread->start();
-    ui->progressBar->setValue(GetInstallPercent(MAIN_COPY));
+	Bugs::ReportBug("Install", step, info.toStdString(), log.toStdString());
 }
 
-void InstallWindow::handleMainDLLCopySuccess()
+void InstallWindow::handleLog(QString text)
 {
-	QString kenshiDir = options.GetKenshiInstallDir();
-    std::string dllWritePath = kenshiDir.toStdString() + "CompressToolsLib.dll";
-	CopyThread *modCopyThread = CopyThread::CreateCopyThread("tools/CompressToolsLib.dll", dllWritePath, this);
-    connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
-	connect(modCopyThread, &CopyThread::resultCancel, this, &InstallWindow::handleCancel);
-    connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleSecondaryDLLCopySuccess);
-    modCopyThread->start();
-    ui->progressBar->setValue(GetInstallPercent(SECONDARY_COPY));
+	// used for internal logging - sent with bug reports, not
+	// normally shown to the user
+	log += text + "\n";
 }
 
-void InstallWindow::handleSecondaryDLLCopySuccess()
+void InstallWindow::handleStatusUpdate(QString text)
 {
-	QString kenshiDir = options.GetKenshiInstallDir();
-    // Create folder (done in-place as it should be instant)
-	std::string command = "mkdir \"" + kenshiDir.toStdString() + "RE_Kenshi\"";
-    system(command.c_str());
-	// check if the folder was created
-	QFileInfo check_folder(kenshiDir + "RE_Kenshi/");
-	if(!check_folder.exists())
-	{
-		handleError(tr("Could not create folder ") + kenshiDir + "RE_Kenshi");
-	}
-    std::string tutWritePath = kenshiDir.toStdString() + "RE_Kenshi/game_speed_tutorial.png";
-	CopyThread *modCopyThread = CopyThread::CreateCopyThread("tools/game_speed_tutorial.png", tutWritePath, this);
-	connect(modCopyThread, &CopyThread::resultError, this, &InstallWindow::handleError);
-	connect(modCopyThread, &CopyThread::resultCancel, this, &InstallWindow::handleCancel);
-    connect(modCopyThread, &CopyThread::resultSuccess, this, &InstallWindow::handleTutorialImageCopySuccess);
-    modCopyThread->start();
-    ui->progressBar->setValue(GetInstallPercent(TUT_IMAGE_COPY));
+	// updates the status display text (also added to logs)
+	ui->label->setText(text);
+	log += text + "\n";
 }
 
-void InstallWindow::handleTutorialImageCopySuccess()
-{
-    // no threading + GUI update on this once since it's fast
-    ui->label->setText(tr("Updating mod config..."));
-	QString kenshiDir = options.GetKenshiInstallDir();
-
-    // copy translation files
-    // Command doesn't like forward slashes
-    std::string command = ("xcopy /S /Y tools\\locale \"" + kenshiDir.replace("/","\\") + "RE_Kenshi\\locale\\\"").toStdString();
-    int result = system(command.c_str());
-    if(result != 0)
-    {
-        handleError(tr("Error copying translation files. "));
-        return;
-    }
-
-	// clear shader cache version
-	if(options.clearShaderCache)
-	{
-		try
-		{
-			QFileInfo check_file(kenshiDir + "RE_Kenshi/shader_cache.sc");
-			if(check_file.exists() && check_file.isFile())
-			{
-				QFile file (check_file.absoluteFilePath());
-				file.remove();
-			}
-		}
-		catch (const std::exception& e)
-		{
-			// doesn't really matter if this fails, it's optional anyway
-		}
-	}
-
-    // update settings
-    QFile modConfigFile(kenshiDir + "RE_Kenshi.ini");
-    modConfigFile.open(QFile::ReadOnly);
-    QJsonDocument jsonDoc = QJsonDocument().fromJson(modConfigFile.readAll());
-    modConfigFile.close();
-    QJsonObject jsonObj = jsonDoc.object();
-	jsonObj.insert("CheckUpdates", options.checkUpdates);
-    // clear skipped version
-	if(options.clearSkippedVersions)
-        jsonObj.insert("SkippedVersion", "");
-    jsonDoc.setObject(jsonObj);
-    modConfigFile.open(QFile::WriteOnly);
-    modConfigFile.write(jsonDoc.toJson());
-    modConfigFile.close();
-
-    ui->progressBar->setValue(GetInstallPercent(SECONDARY_COPY));
-    // Go straight into the next block
-    handleModSettingsUpdateSuccess();
-}
-
-void InstallWindow::handleModSettingsUpdateSuccess()
-{
-	if(options.compressHeightmap)
-    {
-        // TODO refactor - this is in two places
-        ui->label->setText(tr("Compressing heightmap, this may take a minute or two..."));
-		QString kenshiDir = options.GetKenshiInstallDir();
-        std::string heightmapReadPath = kenshiDir.toStdString() + "data/newland/land/fullmap.tif";
-        std::string heightmapWritePath = kenshiDir.toStdString() + "data/newland/land/fullmap.cif";
-        std::string command = "tools\\CompressTools.exe \"" + heightmapReadPath + "\" \"" + heightmapWritePath + "\"";
-        ShellThread *kenshiModThread = new ShellThread(command);
-        connect(kenshiModThread, &ShellThread::resultError, this, &InstallWindow::handleShellError);
-        connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleHeightmapCompressSuccess);
-        kenshiModThread->start();
-        ui->progressBar->setValue(GetInstallPercent(COMPRESS));
-    }
-    else
-    {
-        // TODO refactor - this is in two places
-        ui->label->setText(tr("Adding RE_Kenshi to plugin config file..."));
-		QString kenshiDir = options.GetKenshiInstallDir();
-        std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
-        std::string pluginLoadStr = "Plugin=RE_Kenshi";
-        std::string command = "find /c \"" + pluginLoadStr + "\" \"" + configWritePath + "\" >NUL || (echo. >> \"" + configWritePath + "\") && (echo " + pluginLoadStr + " >> \"" + configWritePath + "\")";
-        ShellThread *kenshiModThread = new ShellThread(command);
-        connect(kenshiModThread, &ShellThread::resultError, this, &InstallWindow::handleShellError);
-        connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleConfigAppendSuccess);
-        kenshiModThread->start();
-        ui->progressBar->setValue(GetInstallPercent(CONFIG_APPEND));
-    }
-}
-
-void InstallWindow::handleHeightmapCompressSuccess()
-{
-    // TODO refactor - this is in two places
-    ui->label->setText(tr("Adding RE_Kenshi to plugin config file..."));
-	QString kenshiDir = options.GetKenshiInstallDir();
-    std::string configWritePath = kenshiDir.toStdString() + "Plugins_x64.cfg";
-    std::string pluginLoadStr = "Plugin=RE_Kenshi";
-    std::string command = "find /c \"" + pluginLoadStr + "\" \"" + configWritePath + "\" >NUL || (echo. >> \"" + configWritePath + "\") && (echo " + pluginLoadStr + " >> \"" + configWritePath + "\")";
-    ShellThread *kenshiModThread = new ShellThread(command);
-    connect(kenshiModThread, &ShellThread::resultError, this, &InstallWindow::handleShellError);
-    connect(kenshiModThread, &ShellThread::resultSuccess, this, &InstallWindow::handleConfigAppendSuccess);
-    kenshiModThread->start();
-    ui->progressBar->setValue(GetInstallPercent(CONFIG_APPEND));
-}
-
-
-void InstallWindow::handleConfigAppendSuccess()
-{
-    if(error)
-    {
-        Bugs::ReportBug("InstallWindow", DONE, "UNCAUGHT ERROR: this should never happen");
-        ui->label->setText(tr("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" and \"Plugins_x64_vanilla.cfg\" to \"Plugins_x64.cfg\" to fix whatever I've done... :("));
-    }
-    else
-    {
-        ui->label->setText(tr("RE_Kenshi has installed successfully!"));
-        ui->progressBar->setValue(GetInstallPercent(DONE));
-    }
-    ui->closeButton->setEnabled(true);
-}
-
-void InstallWindow::handleShellError(int errorVal)
-{
-    Bugs::ReportBug("InstallWindow", GetInstallStepFromPercent(ui->progressBar->value()), "Shell command returned: " + std::to_string(errorVal));
-    QString text = tr("Error: Shell command returned: ") + QString::fromStdString(std::to_string(errorVal)) + tr(" install aborted.");
-    ui->label->setText(text);
-    error = true;
-    ui->closeButton->setEnabled(true);
-}
-
-void InstallWindow::handleError(QString errorStr)
-{
-    Bugs::ReportBug("InstallWindow", GetInstallStepFromPercent(ui->progressBar->value()), errorStr.toStdString());
-    ui->label->setText(tr("Error: ") + errorStr);
-    error = true;
-    ui->closeButton->setEnabled(true);
-}
-
-void InstallWindow::handleCancel()
+void InstallWindow::handleError(bool requireUninstall)
 {
 	// uninstall to unbork
-	QMessageBox msgBox(QMessageBox::Warning, tr("Installation cancelled"), tr("Installation was cancelled.")
-					   + tr("\nAny copied files will now be uninstalled."),
-					   QMessageBox::Ok);
-	msgBox.exec();
+	if(requireUninstall)
+	{
+		QMessageBox msgBox(QMessageBox::Warning, tr("Installation errored"), tr("An error occured while installing.")
+						   + tr("\nAny copied files will now be uninstalled."),
+						   QMessageBox::Ok);
+		msgBox.exec();
 
-	UninstallWindow* uninstallWindow = new UninstallWindow(MainWindow::UNINSTALL, options);
-	uninstallWindow->show();
-	this->close();
+		this->hide();
+		UninstallWindow* uninstallWindow = new UninstallWindow(MainWindow::UNINSTALL, options);
+		uninstallWindow->show();
+	};
+	ui->closeButton->setEnabled(true);
+}
+
+void InstallWindow::handleCancel(bool requireUninstall)
+{
+	// uninstall to unbork
+	if(requireUninstall)
+	{
+		QMessageBox msgBox(QMessageBox::Warning, tr("Installation cancelled"), tr("Installation was cancelled.")
+						   + tr("\nAny copied files will now be uninstalled."),
+						   QMessageBox::Ok);
+		msgBox.exec();
+
+		this->hide();
+		UninstallWindow* uninstallWindow = new UninstallWindow(MainWindow::UNINSTALL, options);
+		uninstallWindow->show();
+	}
+	else
+	{
+		ui->label->setText(tr("Installation cancelled"));
+		handleProgressUpdate(100);
+	}
+
+	ui->closeButton->setEnabled(true);
+}
+
+void InstallWindow::handleProgressUpdate(int percent)
+{
+	ui->progressBar->setValue(percent);
+}
+
+void InstallWindow::handleSuccess()
+{
+	ui->label->setText(tr("RE_Kenshi has installed successfully!"));
+	ui->progressBar->setValue(100);
+    ui->closeButton->setEnabled(true);
 }
 
 InstallWindow::~InstallWindow()
