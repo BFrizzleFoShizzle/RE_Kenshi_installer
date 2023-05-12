@@ -82,7 +82,7 @@ void Bugs::ReportBug(std::string window, int step, std::string error, std::strin
 {
 	// get user consent
 	QMessageBox consentBox;
-	QCheckBox uuidCheckBox("Include UUID hash");
+	QCheckBox uuidCheckBox(QObject::tr("Include UUID hash"));
 	QString hash = QString::fromStdString(GetUUIDHash());
 	uuidCheckBox.setChecked(true);
 	consentBox.setIcon(QMessageBox::Critical);
