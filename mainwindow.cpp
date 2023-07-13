@@ -20,9 +20,11 @@ std::vector<QString> requiredFiles = {"tools/RE_kenshi.dll",
 						  "tools/game_speed_tutorial.png",
 						  "tools/locale",
 						  "translations/qt_de.qm",
-						  "translations/qt_de.qm",
+						  "translations/qt_ru.qm",
+						  "translations/qt_ja.qm",
 						  "translations/RE_Kenshi_de.qm",
-						  "translations/RE_Kenshi_ru.qm"};
+						  "translations/RE_Kenshi_ru.qm",
+						  "translations/RE_Kenshi_ja.qm"};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -37,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->comboBox->addItem("English", "en");
 	ui->comboBox->addItem("Deutsch", "de");
 	ui->comboBox->addItem("Русский", "ru");
+	ui->comboBox->addItem("日本語", "ja");
 	ui->comboBox->setCurrentIndex(ui->comboBox->findData(language));
 
     // Dumb workaround to create a multiline button

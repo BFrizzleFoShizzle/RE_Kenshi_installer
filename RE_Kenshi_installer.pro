@@ -49,7 +49,8 @@ FORMS += \
 
 TRANSLATIONS = RE_Kenshi_en.ts \
     RE_Kenshi_de.ts \
-    RE_Kenshi_ru.ts
+    RE_Kenshi_ru.ts \
+    RE_Kenshi_ja.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -64,10 +65,9 @@ DEPENDPATH += $$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/Li
 # copy files needed for distribution
 QMAKE_POST_LINK += xcopy /E /Y \"$$PWD\\data\\\" \"$$OUT_PWD\\dist\\\"
 QMAKE_POST_LINK += && xcopy /Y \"$$OUT_PWD\\release\\$${TARGET}.exe\" \"$$OUT_PWD\\dist\\\"
-QMAKE_POST_LINK += && xcopy /Y \"$$OUT_PWD\\release\\RE_Kenshi_de.qm\" \"$$OUT_PWD\\dist\\translations\\\"
-QMAKE_POST_LINK += && xcopy /Y \"$$OUT_PWD\\release\\RE_Kenshi_ru.qm\" \"$$OUT_PWD\\dist\\translations\\\"
+QMAKE_POST_LINK += && xcopy /Y \"$$PWD\\RE_Kenshi_*.qm\" \"$$OUT_PWD\\dist\\translations\\\"
 QMAKE_POST_LINK += && xcopy /Y \"$$PWD\\LICENSE\" \"$$OUT_PWD\\dist\\\"
-QMAKE_POST_LINK += && "C:\\Qt\\5.15.2\\msvc2019_64\\bin\\windeployqt.exe" --translations en,de,ru --no-compiler-runtime --no-system-d3d-compiler --no-opengl-sw \"$$OUT_PWD\\dist\\$${TARGET}.exe\"
+QMAKE_POST_LINK += && "C:\\Qt\\5.15.2\\msvc2019_64\\bin\\windeployqt.exe" --translations en,de,ru,ja --no-compiler-runtime --no-system-d3d-compiler --no-opengl-sw \"$$OUT_PWD\\dist\\$${TARGET}.exe\"
 # pretty sure these aren't needed
 QMAKE_POST_LINK += && rmdir /s /q \"$$OUT_PWD\\dist\\bearer\"
 QMAKE_POST_LINK += && rmdir /s /q \"$$OUT_PWD\\dist\\iconengines\"

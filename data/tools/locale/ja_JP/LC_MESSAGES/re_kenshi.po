@@ -1,0 +1,205 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-24 09:44+1300\n"
+"PO-Revision-Date: 2023-06-20 18:53+0900\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.3.1\n"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:602
+msgid "Speed "
+msgstr "速度 "
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:934
+msgid "RE_Kenshi Menu"
+msgstr "RE_Kenshiメニュー"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:952
+msgid "RE_Kenshi Bug Report"
+msgstr "RE_Kenshiのバグを報告"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:960
+msgid ""
+"Your report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with "
+"the following information:"
+msgstr ""
+"RE_Kenshiの開発者(BFrizzleFoShizzle)にバグを報告します。（送信内容には以下"
+"の情報が含まれます。）:"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:961
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:99
+msgid ""
+"\n"
+"RE_Kenshi version: "
+msgstr ""
+"\n"
+"RE_Kenshiのバージョン: "
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:962
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:100
+msgid ""
+"\n"
+"Kenshi version: "
+msgstr ""
+"\n"
+"Kenshiのバージョン: "
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:963
+msgid ""
+"\n"
+"Your bug description"
+msgstr ""
+"\n"
+"バグの詳細"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:964
+msgid ""
+"\n"
+"\n"
+"Please describe the bug:"
+msgstr ""
+"\n"
+"\n"
+"発生したバグについて:"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:969
+msgid "Send report"
+msgstr "レポートを送信"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:974
+msgid "Settings"
+msgstr "設定"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:981
+msgid "Report bug"
+msgstr "バグをレポート"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:987
+msgid "Automatically check for updates"
+msgstr "アップデートを自動で確認"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:994
+msgid "Open RE_Kenshi settings on startup"
+msgstr "ゲーム開始時に自動でRE_Kenshiの設定画面を展開"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1001
+msgid "Fix Kenshi's RNG bug"
+msgstr "KenshiのRNGバグを修正"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1008
+msgid "Increase max camera distance"
+msgstr "カメラを引く最大距離を延長"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1015
+msgid "Cache shaders"
+msgstr "シェーダーのキャッシュ"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1022
+msgid "Log file IO"
+msgstr "ファイルのIOを記録"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1029
+msgid "Log audio IDs/events/switches/states"
+msgstr "オーディオのIDを記録 IDs/events/switches/states"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1037
+msgid "To enable, reinstall RE_Kenshi and check \"Compress Heightmap\""
+msgstr ""
+"MODを再インストールし、\"ハイトマップを圧縮する \"をチェックして有効化"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1042
+msgid "[TOGGLE MAY CRASH] Use compressed heightmap"
+msgstr "[クリック時クラッシュの危険あり]圧縮ハイトマップを使用"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1067
+msgid "Attack slots ("
+msgstr "アタックスロット（"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1090
+msgid "Max. faction size ("
+msgstr "雇用可能人数の最大（"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1115
+msgid "Max. squad size ("
+msgstr "一部隊の人数の最大（"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1140
+msgid "Max. squads ("
+msgstr "部隊数の最大（"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1151
+msgid "Use custom game speed controls"
+msgstr "カスタムしたゲーム速度でKenshiをプレイ"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1160
+msgid "Game speeds"
+msgstr "ゲーム速度"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1162
+msgid "Add game speed"
+msgstr "ゲーム速度を追加"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1168
+msgid "Debug log"
+msgstr "デバッグログ"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1253
+msgid "RE_Kenshi settings"
+msgstr "RE_Kenshiの設定"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1474
+msgid " - [NOT SUPPORTED, MOD DISABLED]"
+msgstr " - [サポートされていません。MODは無効化されています。]"
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:96
+msgid "Kenshi has crashed."
+msgstr "Kenshiがクラッシュしました。"
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:97
+msgid ""
+"\n"
+"Would you like to send a crash report to the RE_Kenshi team?"
+msgstr ""
+"\n"
+"クラッシュレポートを開発チームに送信しますか？"
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:98
+msgid ""
+"\n"
+"Your report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with "
+"the following information:"
+msgstr ""
+"\n"
+"RE_Kenshiの開発者(BFrizzleFoShizzle)にバグを報告します。（送信内容には以下"
+"の情報が含まれます。）:"
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:101
+msgid ""
+"\n"
+"RE_Kenshi's log"
+msgstr ""
+"\n"
+"RE_Kenshiのログ"
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:104
+msgid ""
+"\n"
+"Kenshi's crashdump ("
+msgstr ""
+"\n"
+"Kenshiのクラッシュダンプ（"
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:107
+msgid "RE_Kenshi Crash Reporter"
+msgstr "クラッシュレポートの報告者"
