@@ -40,7 +40,8 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->comboBox->addItem("Deutsch", "de");
 	ui->comboBox->addItem("Русский", "ru");
 	ui->comboBox->addItem("日本語", "ja");
-	ui->comboBox->setCurrentIndex(ui->comboBox->findData(language));
+	if(ui->comboBox->findData(language) != -1)
+		ui->comboBox->setCurrentIndex(ui->comboBox->findData(language));
 
     // Dumb workaround to create a multiline button
     QGridLayout* layout = new QGridLayout(ui->kenshiDirButton);
