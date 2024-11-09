@@ -1,14 +1,29 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <string>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 const std::string moddedKenshiSteamHash = "a5f78908f3f26591a6a3717bfbfafbca";
-const std::string vanillaKenshiHashes[] = {
-	"83ea507cf9667bfe8de2d8a64e9ea57a", // Steam 1.0.55
-	"631763f867f8a674fc54a78cd5767235", // Steam 1.0.64
-	"c74140b9ac13995500cd1413b8cc0ba2",  // GOG 1.0.59
-	"1d67d862b4ce17c5b54279790fbe8f8a"  // GOG 1.0.64
-};
+
+static std::map<QString, QString> GetSupportedVersions()
+{
+	QFile installerConfigFile("config.json");
+	installerConfigFile.open(QFile::ReadOnly);
+	QJsonDocument jsonDoc = QJsonDocument().fromJson(installerConfigFile.readAll());
+	installerConfigFile.close();
+	QJsonObject jsonObj = jsonDoc.object();
+	QJsonObject supportedVersionsObj = jsonObj.value("supportedVersions").toObject();
+
+	std::map<QString, QString> supportedVersions;
+	for(auto key : supportedVersionsObj.keys())
+	{
+		// force deep copy
+		supportedVersions.emplace(key, supportedVersionsObj.value(key).toString());
+	}
+
+	return supportedVersions;
+}
 
 #endif // CONFIG_H

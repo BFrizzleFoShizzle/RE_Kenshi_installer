@@ -14,12 +14,13 @@ bool HashThread::HashSupported(std::string hash)
     if(hash == moddedKenshiSteamHash)
         return true;
 
-    int numHashes = sizeof(vanillaKenshiHashes) / sizeof(vanillaKenshiHashes[0]);
-    for(int i=0;i<numHashes;++i)
-    {
-        if(hash == vanillaKenshiHashes[i])
-            return true;
-    }
+	std::map<QString, QString> supportedVersions = GetSupportedVersions();
+
+	for(auto version : supportedVersions)
+	{
+		if(version.second == QString(hash.c_str()))
+			return true;
+	}
 
     return false;
 }

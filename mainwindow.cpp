@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "config.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QMessageBox>
@@ -217,7 +218,26 @@ void MainWindow::handleExeHash(QString hash)
     }
     else
     {
-        ui->outputLabel->setText(tr("Hash ") + hash + tr(" does not match. This mod is only compatible with Kenshi ") + "1.0.55, 1.0.62, 1.0.64" + tr(" (Steam) and ") + "1.0.59" + tr(" (GOG)."));
+		QString steamVersions = "";
+		QString GOGVersions = "";
+		std::map<QString, QString> supportedVersions = GetSupportedVersions();
+		for(auto ver : supportedVersions)
+		{
+			if(ver.first.split(" ")[0] == "Steam")
+			{
+				if (steamVersions != "")
+					steamVersions += ", ";
+				steamVersions += ver.first.split(" ")[1];
+			}
+			else if(ver.first.split(" ")[0] == "GOG")
+			{
+				if (GOGVersions != "")
+					GOGVersions += ", ";
+				GOGVersions += ver.first.split(" ")[1];
+			}
+		}
+
+		ui->outputLabel->setText(tr("Hash ") + hash + tr(" does not match. This mod is only compatible with Kenshi ") + steamVersions + tr(" (Steam) and ") + GOGVersions + tr(" (GOG)."));
         ui->nextButton->setEnabled(false);
         ui->uninstallButton->setEnabled(false);
     }
