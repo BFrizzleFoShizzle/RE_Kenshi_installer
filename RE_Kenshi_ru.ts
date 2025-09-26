@@ -4,22 +4,22 @@
 <context>
     <name>BaseThread</name>
     <message>
-        <location filename="basethread.cpp" line="47"/>
+        <location filename="basethread.cpp" line="48"/>
         <source>File open error</source>
         <translation>Ошибка при открытии файла</translation>
     </message>
     <message>
-        <location filename="basethread.cpp" line="48"/>
+        <location filename="basethread.cpp" line="49"/>
         <source>The file </source>
         <translation>Файл </translation>
     </message>
     <message>
-        <location filename="basethread.cpp" line="48"/>
+        <location filename="basethread.cpp" line="49"/>
         <source> is open in another process.</source>
         <translation> открыт в другом процессе.</translation>
     </message>
     <message>
-        <location filename="basethread.cpp" line="49"/>
+        <location filename="basethread.cpp" line="50"/>
         <source>
 Please close any other processes before continuing.</source>
         <translation>
@@ -36,7 +36,7 @@ Please close any other processes before continuing.</source>
 <context>
     <name>HashThread</name>
     <message>
-        <location filename="hashthread.cpp" line="52"/>
+        <location filename="hashthread.cpp" line="53"/>
         <source>File could not be opened</source>
         <translation>Файл не удалось открыть</translation>
     </message>
@@ -46,12 +46,12 @@ Please close any other processes before continuing.</source>
     <message>
         <location filename="installthread.cpp" line="67"/>
         <source>Error copying </source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка копирования </translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="76"/>
         <source> doesn&apos;t exist at </source>
-        <translation type="unfinished"></translation>
+        <translation> не существует по адресу </translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="90"/>
@@ -61,7 +61,7 @@ Please close any other processes before continuing.</source>
     <message>
         <location filename="installthread.cpp" line="101"/>
         <source>Kenshi executable could not be opened</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть исполняемый файл Kenshi</translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="112"/>
@@ -79,17 +79,18 @@ Please close any other processes before continuing.</source>
         <location filename="installthread.cpp" line="134"/>
         <source>Updating from RE_Kenshi versions before 0.2.0 is no longer supported.
 please uninstall the previous RE_Kenshi using an installer from before 0.2.8, and try installing again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление RE_Kenshi версий до 0.2.0 больше не поддерживается.
+Удалите предыдущую версию RE_Kenshi с помощью установщика актуальной версии  и начните установку снова.</translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="141"/>
         <source>Hash matches. Making kenshi plugin config backup...</source>
-        <translation type="unfinished">Совпадения хэша. Создание резервной копии конфигурации плагина kenshi...</translation>
+        <translation>Хэш совпадает. Создание резервнуой копии конфигурации плагина Kenshi...</translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="167"/>
         <source>Error backing up plugin config file: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка в резервном копировании файла конфигурация  плагина: </translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="177"/>
@@ -109,12 +110,12 @@ please uninstall the previous RE_Kenshi using an installer from before 0.2.8, an
     <message>
         <location filename="installthread.cpp" line="232"/>
         <source>Error copying data files</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка копирования файлов данных</translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="240"/>
         <source>Translation files missing at </source>
-        <translation type="unfinished"></translation>
+        <translation>Файлы перевода отсутствуют </translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="246"/>
@@ -134,12 +135,12 @@ please uninstall the previous RE_Kenshi using an installer from before 0.2.8, an
     <message>
         <location filename="installthread.cpp" line="331"/>
         <source>Could not find Kenshi plugin config at </source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось найти конфигурацию плагина Kenshi по адресу </translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="339"/>
         <source>Error updating plugin config file: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка обновления файла конфигурации плагина: </translation>
     </message>
     <message>
         <location filename="installthread.cpp" line="354"/>
@@ -233,12 +234,12 @@ please uninstall the previous RE_Kenshi using an installer from before 0.2.8, an
     <message>
         <location filename="installwindow.cpp" line="79"/>
         <source>Installation errored</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка установки</translation>
     </message>
     <message>
         <location filename="installwindow.cpp" line="79"/>
         <source>An error occured while installing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Произошла ошибка при установке.</translation>
     </message>
     <message>
         <location filename="installwindow.cpp" line="96"/>
@@ -268,13 +269,13 @@ Any copied files will now be uninstalled.</source>
     </message>
     <message>
         <location filename="mainwindow.ui" line="124"/>
-        <location filename="mainwindow.cpp" line="262"/>
+        <location filename="mainwindow.cpp" line="283"/>
         <source>Find Kenshi install dir</source>
         <translation>Укажите путь до установленний Kenshi dir (exe файл)</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="53"/>
-        <location filename="mainwindow.cpp" line="263"/>
+        <location filename="mainwindow.cpp" line="284"/>
         <source>Next</source>
         <translation>Далее</translation>
     </message>
@@ -285,13 +286,13 @@ Any copied files will now be uninstalled.</source>
     </message>
     <message>
         <location filename="mainwindow.ui" line="66"/>
-        <location filename="mainwindow.cpp" line="261"/>
+        <location filename="mainwindow.cpp" line="282"/>
         <source>Please select kenshi executable</source>
         <translation>Пожалуйста, выберите исполняемый файл kenshi</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="88"/>
-        <location filename="mainwindow.cpp" line="264"/>
+        <location filename="mainwindow.cpp" line="285"/>
         <source>Uninstall</source>
         <translation>Деинсталлировать</translation>
     </message>
@@ -301,67 +302,67 @@ Any copied files will now be uninstalled.</source>
         <translation>Язык:</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="106"/>
+        <location filename="mainwindow.cpp" line="108"/>
         <source>Select Kenshi executable:</source>
         <translation>Выберите исполняемый файл Kenshi:</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="122"/>
+        <location filename="mainwindow.cpp" line="124"/>
         <source>Missing file: </source>
         <translation>Недостающий файл: </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="123"/>
+        <location filename="mainwindow.cpp" line="125"/>
         <source>Make sure all files in the RE_Kenshi installer archive are extracted to the same folder as RE_Kenshi_installer.exe</source>
         <translation>Убедитесь, что все файлы в архиве установщика RE_Kenshi извлечены в ту же папку, что и RE_Kenshi_installer.exe</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="138"/>
+        <location filename="mainwindow.cpp" line="140"/>
         <source>Processing...</source>
         <translation>Обработка...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="160"/>
+        <location filename="mainwindow.cpp" line="162"/>
         <source>Checking file hash...</source>
         <translation>Проверка хэша файла...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="172"/>
+        <location filename="mainwindow.cpp" line="174"/>
         <source>Please select kenshi executable.</source>
         <translation>Пожалуйста, выберите исполняемый файл kenshi.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="178"/>
+        <location filename="mainwindow.cpp" line="180"/>
         <source>Error hashing file. </source>
         <translation>Ошибка хэширования файла. </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="178"/>
+        <location filename="mainwindow.cpp" line="180"/>
         <source> Please select kenshi executable.</source>
         <translation> Пожалуйста, выберите исполняемый файл kenshi.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="209"/>
+        <location filename="mainwindow.cpp" line="211"/>
         <source>Game hash matches. Continue...</source>
         <translation>Совпадения хэша игры. Продолжить...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="219"/>
+        <location filename="mainwindow.cpp" line="240"/>
         <source>Hash </source>
         <translation>Хэш </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="219"/>
+        <location filename="mainwindow.cpp" line="240"/>
         <source> does not match. This mod is only compatible with Kenshi </source>
         <translation> Не подходи. Этот мод совместим только с Kenshi </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="219"/>
+        <location filename="mainwindow.cpp" line="240"/>
         <source> (Steam) and </source>
         <translation> (Steam) и </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="219"/>
+        <location filename="mainwindow.cpp" line="240"/>
         <source> (GOG).</source>
         <translation> (GOG).</translation>
     </message>
@@ -374,17 +375,17 @@ Any copied files will now be uninstalled.</source>
         <translation type="vanished"> Версия не совпадает. Этот мод совместим только с Kenshi 1.0.55, 1.0.59 (Steam) и 1.0.59 (GOG).</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="235"/>
+        <location filename="mainwindow.cpp" line="256"/>
         <source>Are you sure you wish to uninstall RE_Kenshi?</source>
         <translation>Вы уверены, что хотите удалить RE_Kenshi?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="236"/>
+        <location filename="mainwindow.cpp" line="257"/>
         <source>Confirm</source>
         <translation>Подтвердить</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="237"/>
+        <location filename="mainwindow.cpp" line="258"/>
         <source>Cancel</source>
         <translation>Отменить</translation>
     </message>
@@ -412,7 +413,7 @@ Heightmap compression uses ~150MB of disk space.
 Heightmap compression significantly improves load times on HDDs and may improve load time on SSDs.</source>
         <translation>Выберите опции.
 Сжатие карты высот занимает ~150 МБ места на диске.
-Сжатие карты высот значительно увеличивает время загрузки игры у жестких дисков (HDD) и может немного увеличить время загрузки у твердотельных накопителей (SSD).</translation>
+Сжатие карты высот значительно увеличивает скорость загрузки игры на жестких дисков (HDD) и может немного ускорить время загрузки на  SSD накопителе.</translation>
     </message>
     <message>
         <location filename="optionswindow.ui" line="70"/>
@@ -443,21 +444,21 @@ Heightmap compression significantly improves load times on HDDs and may improve 
         <location filename="optionswindow.cpp" line="23"/>
         <source>Installing to HDD, heightmap compression enabled by default.
 </source>
-        <translation>При установке на жёсткий диск, сжатие карты высот включено по умолчанию.
+        <translation>При установке на жёсткий диск (HDD), сжатие карты высот включено по умолчанию.
 </translation>
     </message>
     <message>
         <location filename="optionswindow.cpp" line="28"/>
         <source>Not installing to HDD, heightmap compression disabled by default.
 </source>
-        <translation>Не устанавливается на жёсткий диск, сжатие карты высот по умолчанию отключено.
+        <translation>При установке не  на жёсткий диск, сжатие карты высот по умолчанию отключено.
 </translation>
     </message>
     <message>
         <location filename="optionswindow.cpp" line="29"/>
         <source>Heightmap compression may or may not improve performance on your system.
 </source>
-        <translation>Сжатие карты высот может повысить производительность вашей системы, а может и не изменить её.
+        <translation>Сжатие карты высот,  может повысить производительность вашей системы и ускорить загрузку игры, а может и не повлиять.
 </translation>
     </message>
 </context>
@@ -466,12 +467,12 @@ Heightmap compression significantly improves load times on HDDs and may improve 
     <message>
         <location filename="bugs.cpp" line="85"/>
         <source>Include UUID hash</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить UUID хэш</translation>
     </message>
     <message>
         <location filename="bugs.cpp" line="89"/>
         <location filename="bugs.cpp" line="165"/>
-        <location filename="mainwindow.cpp" line="120"/>
+        <location filename="mainwindow.cpp" line="122"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -531,7 +532,8 @@ UUID hash: </source>
         <location filename="bugs.cpp" line="97"/>
         <source>
 Install log (press &quot;Show Details&quot;  to view)</source>
-        <translation></translation>
+        <translation>
+Лог установки (нажмите «Показать подробности» для просмотра)</translation>
     </message>
     <message>
         <location filename="bugs.cpp" line="98"/>
@@ -594,7 +596,7 @@ Please close any other processes before continuing.</source>
     <message>
         <location filename="uninstallthread.cpp" line="54"/>
         <source>Kenshi executable could not be opened</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть исполняемый файл Kenshi</translation>
     </message>
     <message>
         <location filename="uninstallthread.cpp" line="65"/>
@@ -612,7 +614,8 @@ Please close any other processes before continuing.</source>
         <location filename="uninstallthread.cpp" line="87"/>
         <source>Updating from RE_Kenshi versions before 0.2.0 is no longer supported.
 please uninstall the previous RE_Kenshi using an installer from before 0.2.8, and try installing again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление RE_Kenshi версии до 0.2.0 больше не поддерживается.
+Удалите предыдущую версию RE_Kenshi с помощью установщика актуальной версии  и выполните установку заново.</translation>
     </message>
     <message>
         <location filename="uninstallthread.cpp" line="94"/>
@@ -622,7 +625,7 @@ please uninstall the previous RE_Kenshi using an installer from before 0.2.8, an
     <message>
         <location filename="uninstallthread.cpp" line="115"/>
         <source>Error reverting plugin config file: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка при возврате конфигурационного файла плагина: </translation>
     </message>
     <message>
         <location filename="uninstallthread.cpp" line="125"/>
