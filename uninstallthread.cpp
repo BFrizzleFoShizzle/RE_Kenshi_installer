@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QEventLoop>
 #include <QApplication>
+#include <QDir>
+#include <QStandardPaths>
 
 #include <fstream>
 
@@ -16,8 +18,11 @@ enum UninstallStep
 	RESTORE_CONFIG,
 	DELETE_MAIN_DLL,
 	DELETE_SECONDARY_DLL,
-	DELETE_TUT_IMAGE,
+	DELTETE_KENSHILIB,
+	DELETE_DATA,
 	DELETE_HEIGHTMAP,
+	DELETE_SHORTCUTS,
+	DELETE_EXECUTABLE,
 	DONE
 };
 
@@ -91,40 +96,45 @@ void UninstallThread::run()
 		}
 		else if(HashSupported(exeHash))
 		{
-			statusUpdate(tr("EXE hash matches vanilla kenshi. Reverting kenshi plugin config to backup..."));
-			QString pluginsConfigPath = kenshiDir + "Plugins_x64.cfg";
-			QString pluginsConfigBackupPath = kenshiDir + "Plugins_x64_vanilla.cfg";
-			if(FileExists(pluginsConfigBackupPath))
+			statusUpdate(tr("EXE hash matches vanilla kenshi. Reverting kenshi plugin config..."));
+			QString pluginFilePath = kenshiDir + "Plugins_x64.cfg";
+			try
 			{
-				try
+				if(FileExists(pluginFilePath))
 				{
-					// Exceptions: FileOpenFailedException, CancelException, FileInUseException, DeleteFailException
-					MoveFile(pluginsConfigPath, pluginsConfigBackupPath);
-					emit log("Plugin config reverted successfully");
+					QFile pluginConfigFile(pluginFilePath);
+					pluginConfigFile.open(QFile::ReadOnly);
+					QByteArray fileBytes = pluginConfigFile.readAll();
+					pluginConfigFile.close();
+					const char* removeString = "\nPlugin=RE_Kenshi\n";
+					int removeOffset = fileBytes.indexOf(removeString);
+					if(removeOffset == -1)
+					{
+						emit log("RE_Kenshi already disabled in plugins");
+					}
+					else
+					{
+						fileBytes.remove(removeOffset, strlen(removeString));
+						QFile outFile(pluginFilePath);
+						outFile.open(QFile::OpenModeFlag::WriteOnly);
+						outFile.write(fileBytes);
+						outFile.close();
+						emit log("Plugin config update success");
+					}
 				}
-				// cancelling at this point is fine
-				catch(CancelException)
+				else
 				{
-					emit log("Plugin config revert cancelled");
-					emit resultCancel(false);
+					statusUpdate(tr("Could not find Kenshi plugin config at ") + pluginFilePath);
+					emit resultError(true);
 					return;
 				}
-				// any other error needs to be reported
-				catch(std::exception e)
-				{
-					statusUpdate(tr("Error reverting plugin config file: ") + e.what());
-					reportBug(RESTORE_CONFIG, QString("Error: ") + e.what());
-					emit resultError(false);
-					return;
-				}
-
-				progressUpdate(GetUninstallPercent(RESTORE_CONFIG));
 			}
-			else
+			catch(std::exception e)
 			{
-				statusUpdate(tr("Critical error: no config file backup!"));
-				reportBug(RESTORE_CONFIG, "Critical error: no config file backup!");
-				emit resultError(false);
+				emit log(QString("Error updating plugin config ") + e.what());
+				statusUpdate(tr("Error updating plugin config file: ") +  e.what());
+
+				emit resultError(true);
 				return;
 			}
 		}
@@ -186,6 +196,29 @@ void UninstallThread::run()
 		}
 		progressUpdate(GetUninstallPercent(DELETE_SECONDARY_DLL));
 
+		/// Remove KenshiLib DLL
+		QString kenshiLibDllPath = kenshiDir + "KenshiLib.dll";
+		if(FileExists(kenshiLibDllPath))
+		{
+			statusUpdate(tr("Old files restored. Removing KenshiLib DLL..."));
+			try
+			{
+				DeleteFile(kenshiLibDllPath);
+				emit log("KenshiLib DLL deleted successfully");
+			}
+			catch(std::exception e)
+			{
+				// soft error - continue
+				emit log(QString("KenshiLib DLL exists but could not be deleted ") + e.what());
+			}
+		}
+		else
+		{
+			// soft error - continue
+			emit log(QString("KenshiLib DLL doesn't exist at ") + compressToolsDllPath);
+		}
+		progressUpdate(GetUninstallPercent(DELTETE_KENSHILIB));
+
 		/// Remove data
 		/// TODO delete the rest of ./RE_Kenshi/ ?
 		QString tutorialImagePath = kenshiDir + "RE_Kenshi/game_speed_tutorial.png";
@@ -207,7 +240,47 @@ void UninstallThread::run()
 		{
 			emit log(QString("Tutorial image doesn't exist at ") + tutorialImagePath);
 		}
-		progressUpdate(GetUninstallPercent(DELETE_TUT_IMAGE));
+
+		QString rvasPath = kenshiDir + "RE_Kenshi/RVAs";
+		if(QDir(rvasPath).exists())
+		{
+			statusUpdate(tr("Old files restored. Removing RE_Kenshi data (RVAs)..."));
+			try
+			{
+				DeleteFolder(rvasPath);
+				emit log("RE_Kenshi RVAs data deleted successfully");
+			}
+			catch(std::exception e)
+			{
+				// soft error - continue
+				emit log(QString("RVAs exists but could not be deleted ") + e.what());
+			}
+		}
+		else
+		{
+			emit log(QString("RVAs doesn't exist at ") + rvasPath);
+		}
+
+		QString localePath = kenshiDir + "RE_Kenshi/locale";
+		if(QDir(localePath).exists())
+		{
+			statusUpdate(tr("Old files restored. Removing RE_Kenshi data (locale)..."));
+			try
+			{
+				DeleteFolder(localePath);
+				emit log("RE_Kenshi locale data deleted successfully");
+			}
+			catch(std::exception e)
+			{
+				// soft error - continue
+				emit log(QString("Locale data exists but could not be deleted ") + e.what());
+			}
+		}
+		else
+		{
+			emit log(QString("Locales doesn't exist at ") + localePath);
+		}
+		progressUpdate(GetUninstallPercent(DELETE_DATA));
 
 		/// Remove compressed heightmap
 		QString heightmapPath = kenshiDir + "data/newland/land/fullmap.cif";
@@ -231,6 +304,72 @@ void UninstallThread::run()
 			emit log(QString("Compressed heightmap doesn't exist at ") + heightmapPath);
 		}
 		progressUpdate(GetUninstallPercent(DELETE_HEIGHTMAP));
+
+		QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/RE_Kenshi.lnk";
+		if(FileExists(desktopPath))
+		{
+			statusUpdate(tr("Removing shortcuts"));
+			try
+			{
+				DeleteFile(desktopPath);
+				emit log("Desktop shortcut deleted successfully");
+			}
+			catch(std::exception e)
+			{
+				// soft error - continue
+				emit log(QString("Desktop shortcut exists but could not be deleted ") + e.what());
+			}
+		}
+		else
+		{
+			// soft error - continue
+			emit log(QString("Desktop shortcut doesn't exist at ") + desktopPath);
+		}
+
+		QString startPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + "/RE_Kenshi.lnk";
+		if(FileExists(startPath))
+		{
+			statusUpdate(tr("Removing shortcuts"));
+			try
+			{
+				DeleteFile(startPath);
+				emit log("Start shortcut deleted successfully");
+			}
+			catch(std::exception e)
+			{
+				// soft error - continue
+				emit log(QString("Start shortcut exists but could not be deleted ") + e.what());
+			}
+		}
+		else
+		{
+			// soft error - continue
+			emit log(QString("Start shortcut doesn't exist at ") + startPath);
+		}
+		progressUpdate(GetUninstallPercent(DELETE_SHORTCUTS));
+
+		/// Remove executable
+		QString executablePath = kenshiDir + "RE_Kenshi.exe";
+		if(FileExists(executablePath))
+		{
+			statusUpdate(tr("Old files restored. Removing executable..."));
+			try
+			{
+				DeleteFile(executablePath);
+				emit log("executable deleted successfully");
+			}
+			catch(std::exception e)
+			{
+				// soft error - continue
+				emit log(QString("executable exists but could not be deleted ") + e.what());
+			}
+		}
+		else
+		{
+			// soft error - continue
+			emit log(QString("executable doesn't exist at ") + executablePath);
+		}
+		progressUpdate(GetUninstallPercent(DELETE_EXECUTABLE));
 
 		// success
 		progressUpdate(GetUninstallPercent(DONE));

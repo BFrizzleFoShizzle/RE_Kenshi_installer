@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>273</height>
+    <height>341</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>200</y>
+      <y>260</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -34,7 +34,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>100</y>
+      <y>160</y>
       <width>571</width>
       <height>91</height>
      </rect>
@@ -61,7 +61,7 @@ Heightmap compression significantly improves load times on HDDs and may improve 
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>200</y>
+      <y>260</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -74,7 +74,7 @@ Heightmap compression significantly improves load times on HDDs and may improve 
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>20</y>
+      <y>10</y>
       <width>161</width>
       <height>17</height>
      </rect>
@@ -87,7 +87,7 @@ Heightmap compression significantly improves load times on HDDs and may improve 
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>40</y>
+      <y>30</y>
       <width>231</width>
       <height>17</height>
      </rect>
@@ -103,7 +103,7 @@ Heightmap compression significantly improves load times on HDDs and may improve 
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>60</y>
+      <y>50</y>
       <width>231</width>
       <height>17</height>
      </rect>
@@ -119,13 +119,45 @@ Heightmap compression significantly improves load times on HDDs and may improve 
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>80</y>
+      <y>70</y>
       <width>231</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
      <string>Clear shader cache</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="createDesktopShortcutCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>231</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Create Desktop shortcut</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="createStartShortcutCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>231</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Create Start Menu shortcut</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -138,6 +170,8 @@ Heightmap compression significantly improves load times on HDDs and may improve 
    <zorder>checkUpdatesCheckBox</zorder>
    <zorder>clearSkippedVersionsCheckBox</zorder>
    <zorder>clearShaderCacheCheckBox</zorder>
+   <zorder>createDesktopShortcutCheckBox</zorder>
+   <zorder>createStartShortcutCheckBox</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -145,7 +179,7 @@ Heightmap compression significantly improves load times on HDDs and may improve 
      <x>0</x>
      <y>0</y>
      <width>603</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

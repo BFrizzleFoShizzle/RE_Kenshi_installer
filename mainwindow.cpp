@@ -15,11 +15,14 @@
 #include "uninstallwindow.h"
 #include <qlayout.h>
 
-std::vector<QString> requiredFiles = {"tools/RE_kenshi.dll",
-						  "tools/CompressToolsLib.dll",
+std::vector<QString> requiredFiles = {"install/RE_kenshi.dll",
+						  "install/KenshiLib.dll",
+						  "install/CompressToolsLib.dll",
+						  "install/RE_Kenshi/game_speed_tutorial.png",
+						  "install/RE_Kenshi/locale",
+						  "install/RE_Kenshi/RVAs",
 						  "tools/CompressTools.exe",
-						  "tools/game_speed_tutorial.png",
-						  "tools/locale",
+						  "tools/Courgette64.exe",
 						  "translations/qt_de.qm",
 						  "translations/qt_ru.qm",
 						  "translations/qt_ja.qm",
@@ -144,7 +147,7 @@ void MainWindow::on_nextButton_clicked()
     bool installToHDD = DiskUtil::IsOnHDD(kenshiExePath);
 
     this->hide();
-    OptionsWindow* nextWindow = new OptionsWindow(ui->kenshiDirText->text(), this, installToHDD, action);
+	OptionsWindow* nextWindow = new OptionsWindow(ui->kenshiDirText->text(), this, installToHDD, HashRequiresDowngrade(lastHash.toStdString()), action);
     nextWindow->show();
 
     // Re-enable UI in case user goes back to this window
@@ -189,16 +192,20 @@ bool IsModInstalled(QString kenshiEXEHash, QString kenshiEXEPath)
     if(HashThread::HashIsModded(kenshiEXEHash.toStdString()))
         return true;
 
-    // if backup file + DLL exists, mod is installed
+	// if enabled in config or DLL exists, mod is installed
 	QString kenshiDir = kenshiEXEPath.toLower().split("kenshi_gog_x64.exe")[0].split("kenshi_x64.exe")[0];
-    std::string pluginsConfigBackupPath = kenshiDir.toStdString() + "Plugins_x64_vanilla.cfg";
-    std::string dllPath = kenshiDir.toStdString() + "RE_Kenshi.dll";
-    std::ifstream configBackupFile(pluginsConfigBackupPath);
+	std::string dllPath = kenshiDir.toStdString() + "RE_Kenshi.dll";
     std::ifstream dllFile(dllPath);
-    if(configBackupFile.is_open() && dllFile.is_open())
-    {
-        return true;
-    }
+
+	QString pluginFilePath = kenshiDir + "Plugins_x64.cfg";
+	QFile pluginConfigFile(pluginFilePath);
+	pluginConfigFile.open(QFile::ReadOnly);
+	QByteArray fileBytes = pluginConfigFile.readAll();
+	pluginConfigFile.close();
+	if(fileBytes.contains("\nPlugin=RE_Kenshi") || dllFile.is_open())
+	{
+		return true;
+	}
 
     // if neither are true, mod is not installed
     return false;
@@ -206,6 +213,7 @@ bool IsModInstalled(QString kenshiEXEHash, QString kenshiEXEPath)
 
 void MainWindow::handleExeHash(QString hash)
 {
+	lastHash = hash;
     if(HashThread::HashSupported(hash.toStdString()))
     {
         ui->outputLabel->setText(tr("Game hash matches. Continue..."));

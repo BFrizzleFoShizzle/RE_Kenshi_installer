@@ -60,6 +60,7 @@ protected:
 	void MoveFile(QString destPath, QString sourcePath);
 	// Exceptions: SourceFileMissingException, FileInUseException, DeleteFailException
 	void DeleteFile(QString path);
+	bool DeleteFolder(const QString & dirName);
 	bool ShowFileLockedError(QString filename);
 signals:
 	void showMessageBox(QMessageBox *s);

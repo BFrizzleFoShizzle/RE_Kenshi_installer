@@ -169,6 +169,29 @@ void BaseThread::DeleteFile(QString path)
 		throw DeleteFailException();
 }
 
+// stolen from https://stackoverflow.com/questions/27758573/deleting-a-folder-and-all-its-contents-with-qt
+bool BaseThread::DeleteFolder(const QString & dirName)
+{
+	bool result = true;
+	QDir dir(dirName);
+
+	if (dir.exists(dirName)) {
+		Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+			if (info.isDir()) {
+				result = DeleteFolder(info.absoluteFilePath());
+			} else {
+				result = QFile::remove(info.absoluteFilePath());
+			}
+
+			if (!result) {
+				return result;
+			}
+		}
+		result = dir.rmdir(dirName);
+	}
+	return result;
+}
+
 // Exceptions: SourceFileMissingException, FileOpenFailedException, CancelException, FileInUseException, DeleteFailException
 void BaseThread::MoveFile(QString destPath, QString sourcePath)
 {

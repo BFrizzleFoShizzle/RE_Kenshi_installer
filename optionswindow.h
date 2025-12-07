@@ -14,7 +14,7 @@ class OptionsWindow : public QMainWindow
 
 public:
 
-    OptionsWindow(QString kenshiExePath, QMainWindow *previous, bool installToHDD, MainWindow::InstallerAction installerAction, QWidget *parent = nullptr);
+	OptionsWindow(QString kenshiExePath, QMainWindow *previous, bool installToHDD, bool requiresDowngrade, MainWindow::InstallerAction installerAction, QWidget *parent = nullptr);
     ~OptionsWindow();
 
 private slots:

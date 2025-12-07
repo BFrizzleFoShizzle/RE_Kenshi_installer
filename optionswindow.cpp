@@ -7,7 +7,7 @@
 #include <QMessageBox>
 #include <fstream>
 
-OptionsWindow::OptionsWindow(QString kenshiExePath, QMainWindow *previous, bool installToHDD, MainWindow::InstallerAction installerAction, QWidget *parent)
+OptionsWindow::OptionsWindow(QString kenshiExePath, QMainWindow *previous, bool installToHDD, bool requiresDowngrade, MainWindow::InstallerAction installerAction, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::OptionsWindow)
     , backWindow(previous), kenshiExePath(kenshiExePath), action(installerAction)
@@ -30,6 +30,15 @@ OptionsWindow::OptionsWindow(QString kenshiExePath, QMainWindow *previous, bool 
         ui->compressHeightmapCheckBox->setChecked(false);
     }
 
+	if(!requiresDowngrade)
+	{
+		// no downgrade, disable shortcut creation
+		ui->createStartShortcutCheckBox->setVisible(false);
+		ui->createStartShortcutCheckBox->setCheckState(Qt::Unchecked);
+		ui->createDesktopShortcutCheckBox->setVisible(false);
+		ui->createDesktopShortcutCheckBox->setCheckState(Qt::Unchecked);
+	}
+
     label = ui->outputLabel->text() + "\n\n" + label;
     ui->outputLabel->setText(label);
 }
@@ -47,6 +56,8 @@ void OptionsWindow::on_nextButton_clicked()
 	options.checkUpdates = ui->checkUpdatesCheckBox->checkState();
 	options.clearSkippedVersions = ui->clearSkippedVersionsCheckBox->checkState();
 	options.clearShaderCache = ui->clearShaderCacheCheckBox->checkState();
+	options.createStartShortcut = ui->createStartShortcutCheckBox->checkState();
+	options.createDesktopShortcut = ui->createDesktopShortcutCheckBox->checkState();
 
     if(action == MainWindow::InstallerAction::UPGRADE)
     {

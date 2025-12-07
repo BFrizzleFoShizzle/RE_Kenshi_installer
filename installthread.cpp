@@ -2,6 +2,8 @@
 
 #include "installwindow.h"
 
+#include "config.h"
+
 #include <QFileInfo>
 #include <QDir>
 #include <QEventLoop>
@@ -9,17 +11,18 @@
 #include <QApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSettings>
+#include <QStandardPaths>
 
 #include <fstream>
 
 enum InstallStep
 {
 	HASH_CHECK,
-	BACKUP_COPY,
 	MAIN_COPY,
 	SECONDARY_COPY,
-	TUT_IMAGE_COPY,
-	TRANSLATION_COPY,
+	KENSHILIB_COPY,
+	DATA_COPY,
 	MOD_SETTINGS_UPDATE,
 	COMPRESS,
 	// hack to make compression take most of the bar
@@ -27,9 +30,30 @@ enum InstallStep
 	COMPRESS_3,
 	COMPRESS_4,
 	COMPRESS_5,
+	GAME_DOWNGRADE,
+	SHORTCUTS, // only needed if version != 1.0.65
 	CONFIG_APPEND,
 	DONE
 };
+
+// Adapted from https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
+static std::string shellExec(std::string cmd) {
+	char buffer[128];
+	std::string result = "";
+	FILE* pipe = _popen(cmd.c_str(), "r");
+	if (!pipe)
+		return "POPEN_ERROR";
+	try {
+		while (fgets(buffer, sizeof buffer, pipe) != NULL) {
+			result += buffer;
+		}
+	} catch (...) {
+		_pclose(pipe);
+		throw;
+	}
+	_pclose(pipe);
+	return result;
+}
 
 static int GetInstallPercent(InstallStep step)
 {
@@ -136,42 +160,7 @@ void InstallThread::run()
 			emit resultError(false);
 			return;
 		}
-		else if(HashSupported(exeHash))
-		{
-			statusUpdate(tr("Hash matches. Making kenshi plugin config backup..."));
-			QString pluginsConfigPath = kenshiDir + "Plugins_x64.cfg";
-			QString pluginsConfigBackupPath = kenshiDir + "Plugins_x64_vanilla.cfg";
-
-			if(FileExists(pluginsConfigBackupPath))
-			{
-				// the uninstaller should usually prevent this from happening
-				emit log("Plugin config already backed up, skipping...");
-			}
-			else
-			{
-				try
-				{
-					CopyFile(pluginsConfigBackupPath, pluginsConfigPath);
-					emit log("Plugin config backup succeeded");
-				}
-				// cancelling at this point is fine
-				catch(CancelException)
-				{
-					emit log("Plugin config backup cancelled");
-					emit resultCancel(false);
-					return;
-				}
-				// any other error needs to be reported
-				catch(std::exception e)
-				{
-					statusUpdate(tr("Error backing up plugin config file: ") + e.what());
-					reportBug(BACKUP_COPY, QString("Error: ") + e.what());
-					emit resultError(false);
-					return;
-				}
-			}
-		}
-		else
+		else if(!HashSupported(exeHash))
 		{
 			// if we reach here, the hash must have changed between the first window and this window
 			statusUpdate(tr("Hash doesn't match! This shouldn't be possible! No files changed, aborted. Mod not installed. It is now safe to close this window."));
@@ -179,22 +168,29 @@ void InstallThread::run()
 			emit resultError(false);
 			return;
 		}
-		progressUpdate(GetInstallPercent(BACKUP_COPY));
+		progressUpdate(GetInstallPercent(HASH_CHECK));
 
 		/// copy RE_Kenshi DLL
 		statusUpdate(tr("Copying mod files..."));
 		QString reKenshiDllDestPath = kenshiDir + "RE_Kenshi.dll";
-		QString reKenshiDllSrcPath = "tools/RE_Kenshi.dll";
+		QString reKenshiDllSrcPath = "install/RE_Kenshi.dll";
 		if(!CopyChecked(reKenshiDllDestPath, reKenshiDllSrcPath, MAIN_COPY, "RE_Kenshi DLL"))
 			return;
 		progressUpdate(GetInstallPercent(MAIN_COPY));
 
 		/// copy CompressTools DLL
 		QString compressToolsDllDestPath = kenshiDir + "CompressToolsLib.dll";
-		QString compressToolsSrcPath = "tools/CompressToolsLib.dll";
+		QString compressToolsSrcPath = "install/CompressToolsLib.dll";
 		if(!CopyChecked(compressToolsDllDestPath, compressToolsSrcPath, SECONDARY_COPY, "CompressTools DLL"))
 			return;
 		progressUpdate(GetInstallPercent(SECONDARY_COPY));
+
+		// copy KenshiLib
+		QString kenshiLibDllDestPath = kenshiDir + "KenshiLib.dll";
+		QString kenshiLibSrcPath = "install/KenshiLib.dll";
+		if(!CopyChecked(kenshiLibDllDestPath, kenshiLibSrcPath, KENSHILIB_COPY, "KenshiLib DLL"))
+			return;
+		progressUpdate(GetInstallPercent(KENSHILIB_COPY));
 
 		/// Copy data
 		// create data directory
@@ -205,39 +201,31 @@ void InstallThread::run()
 			emit resultError(true);
 			return;
 		}
-		// copy tutorial image
-		QString tutImageDestPath = kenshiDir + "RE_Kenshi/game_speed_tutorial.png";
-		QString tutImageSrcPath = "tools/game_speed_tutorial.png";
-		// TODO translate name?
-		if(!CopyChecked(tutImageDestPath, tutImageSrcPath, TUT_IMAGE_COPY, "game speed tutorial image"))
-			return;
-		progressUpdate(GetInstallPercent(TUT_IMAGE_COPY));
 
-		// copy translation files
-		if(QDir("tools/locale").exists())
+		// copy data files
+		if(QDir("install/RE_Kenshi").exists())
 		{
 			try
 			{
-				CopyFolder(dataDirectory + "locale", "tools/locale");
+				CopyFolder(dataDirectory, "install/RE_Kenshi");
 				emit log("Translation files copied successfully");
 			}
 			catch(CancelException)
 			{
-				emit log("cancel @ game speed tut image copy");
 				emit resultCancel(true);
 				return;
 			}
 			catch(std::exception e)
 			{
 				statusUpdate(tr("Error copying data files") + e.what());
-				reportBug(TRANSLATION_COPY, "Error copying translation files");
+				reportBug(DATA_COPY, "Error copying data files");
 				emit resultError(true);
 				return;
 			}
 		}
 		else
 		{
-			statusUpdate(tr("Translation files missing at ") + "./tools/locale");
+			statusUpdate(tr("Data files missing at ") + "./install/RE_Kenshi");
 			emit resultError(true);
 			return;
 		}
@@ -302,6 +290,33 @@ void InstallThread::run()
 		}
 		progressUpdate(GetInstallPercent(COMPRESS_5));
 
+		/// Downgrade game
+		if(HashRequiresDowngrade(exeHash))
+		{
+			QString patchFile = QFileInfo(options.kenshiExePath).fileName() + ".patch";
+
+			statusUpdate(tr("Downgrading executable..."));
+			std::string command = (".\\tools\\courgette64.exe -apply \"" + options.kenshiExePath + "\" ./tools/" + patchFile + " \"" + kenshiDir + "/RE_Kenshi.exe\"").toStdString();
+			emit log(QString::fromStdString(shellExec(command)));
+
+			progressUpdate(GetInstallPercent(GAME_DOWNGRADE));
+
+			statusUpdate(tr("Creating shortcuts..."));
+			QFile newExecutable(kenshiDir + "/RE_Kenshi.exe");
+			if(options.createDesktopShortcut)
+			{
+				QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+				newExecutable.link(desktopPath+"/RE_Kenshi.lnk");
+			}
+			if(options.createStartShortcut)
+			{
+				QString startPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+				newExecutable.link(startPath+"/RE_Kenshi.lnk");
+			}
+		}
+
+		progressUpdate(GetInstallPercent(SHORTCUTS));
+
 		/// Update plugin config
 		statusUpdate(tr("Adding RE_Kenshi to plugin config file..."));
 		QString pluginFilePath = kenshiDir + "Plugins_x64.cfg";
@@ -351,13 +366,13 @@ void InstallThread::run()
 	}
 	catch(std::exception e)
 	{
-		statusUpdate(tr("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" and \"Plugins_x64_vanilla.cfg\" to \"Plugins_x64.cfg\" to fix whatever I've done... :("));
+		statusUpdate(tr("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Please remove the line \"Plugin=RE_Kenshi\" from \"Plugins_x64.cfg\" to fix whatever I've done... :("));
 		reportBug(DONE, QString("UNCAUGHT ERROR: this should never happen ") + e.what());
 		// TODO ???
 		//emit resultError(true);
 		return;
 	}
-	statusUpdate(tr("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Rename \"kenshi_x64_vanilla.exe\" to \"kenshi_x64.exe\" and \"Plugins_x64_vanilla.cfg\" to \"Plugins_x64.cfg\" to fix whatever I've done... :("));
+	statusUpdate(tr("UNCAUGHT ERROR?!? Sorry, I probably broke your kenshi install. Please remove the line \"Plugin=RE_Kenshi\" from \"Plugins_x64.cfg\" to fix whatever I've done... :("));
 	reportBug(DONE, "Ran past end of install code");
 	// TODO ???
 	//emit resultError(true);

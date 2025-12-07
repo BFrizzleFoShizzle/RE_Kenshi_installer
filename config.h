@@ -26,4 +26,17 @@ static std::map<QString, QString> GetSupportedVersions()
 	return supportedVersions;
 }
 
+static bool HashRequiresDowngrade(std::string hash)
+{
+	std::map<QString, QString> supportedVersions = GetSupportedVersions();
+
+	for(auto version : supportedVersions)
+	{
+		if(version.second == QString(hash.c_str()))
+			// downgrade if not 1.0.65
+			return !version.first.endsWith("1.0.65");
+	}
+
+	return false;
+}
 #endif // CONFIG_H

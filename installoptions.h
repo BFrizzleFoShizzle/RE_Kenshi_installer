@@ -24,6 +24,8 @@ struct InstallOptions
 	bool checkUpdates;
 	bool clearSkippedVersions;
 	bool clearShaderCache;
+	bool createStartShortcut;
+	bool createDesktopShortcut;
 };
 
 #endif // INSTALLOPTIONS_H

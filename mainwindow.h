@@ -43,5 +43,6 @@ private:
     Ui::MainWindow *ui;
 	QTranslator mainTranslator;
 	QTranslator baseTranslator;
+	QString lastHash;
 };
 #endif // MAINWINDOW_H
