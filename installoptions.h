@@ -11,7 +11,9 @@ struct InstallOptions
 		  compressHeightmap(false),
 		  checkUpdates(false),
 		  clearSkippedVersions(false),
-		  clearShaderCache(false)
+		  clearShaderCache(false),
+		  createStartShortcut(false),
+		  createDesktopShortcut(false),
 	{
 
 	}
