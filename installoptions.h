@@ -13,7 +13,7 @@ struct InstallOptions
 		  clearSkippedVersions(false),
 		  clearShaderCache(false),
 		  createStartShortcut(false),
-		  createDesktopShortcut(false),
+		  createDesktopShortcut(false)
 	{
 
 	}
