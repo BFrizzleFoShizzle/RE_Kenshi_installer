@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-19 15:05+1200\n"
-"PO-Revision-Date: 2023-07-13 19:58+1200\n"
+"POT-Creation-Date: 2025-08-01 09:07+1200\n"
+"PO-Revision-Date: 2025-09-15 16:45+1200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,27 +18,29 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.2.2\n"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:608
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:690
 msgid "Speed "
 msgstr "Spielgeschwindigkeit "
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:950
-msgid "RE_Kenshi Menu"
-msgstr "RE_Kenshi Hauptmenü"
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:990
+#, fuzzy
+#| msgid "Report bug"
+msgid "Report sent."
+msgstr "Fehler melden"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:961
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:998
 msgid "Game speed tutorial"
 msgstr "Spielgeschwindigkeits-Tutorial"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:966
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1003
 msgid "Pause"
 msgstr "Pause"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:969
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1010
 msgid "1x speed"
 msgstr "1-fache Geschwindigkeit"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:972
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1012
 msgid ""
 "Decrease\n"
 "speed"
@@ -46,7 +48,7 @@ msgstr ""
 "Geschwindigkeit\n"
 "verringern"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:975
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1015
 msgid ""
 "Increase\n"
 "speed"
@@ -54,15 +56,15 @@ msgstr ""
 "Geschwindigkeit\n"
 "erhöhen"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:978
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1018
 msgid "Current speed"
 msgstr "Aktuelle Geschwindigkeit"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:984
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1029
 msgid "RE_Kenshi Bug Report"
 msgstr "RE_Kenshi Fehlerbericht"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:993
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1038
 msgid ""
 "Your report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with "
 "the following information:"
@@ -70,7 +72,7 @@ msgstr ""
 "Ihr Bericht wird dem Entwickler von RE_Kenshi (BFrizzleFoShizzle) mit den "
 "folgenden Informationen gesendet:"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:994
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1039
 msgid ""
 "\n"
 "RE_Kenshi version: "
@@ -78,8 +80,8 @@ msgstr ""
 "\n"
 "RE_Kenshi Version: "
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:995
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:238
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1040
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:279
 msgid ""
 "\n"
 "Kenshi version: "
@@ -87,8 +89,8 @@ msgstr ""
 "\n"
 "Kenshi Version: "
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:996
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:239
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1041
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:280
 msgid ""
 "\n"
 "UUID hash: "
@@ -96,8 +98,8 @@ msgstr ""
 "\n"
 "UUID-Hash: "
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:996
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:239
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1041
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:280
 msgid ""
 " (optional - allows the developer to know all your reports come from the "
 "same machine)"
@@ -105,8 +107,8 @@ msgstr ""
 " (optional - ermöglicht es dem Entwickler, zu wissen, dass all deine "
 "Berichte von derselben Maschine stammen)"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:997
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:252
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1042
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:294
 msgid ""
 "\n"
 "Your bug description"
@@ -114,8 +116,8 @@ msgstr ""
 "\n"
 "Ihre Beschreibung"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:998
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:253
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1043
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:295
 msgid ""
 "\n"
 "\n"
@@ -125,110 +127,161 @@ msgstr ""
 "\n"
 "Bitte beschreiben Sie den Fehler:"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1005
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:262
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1053
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:304
 msgid "Include UUID hash"
 msgstr "UUID-Hash verwenden"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1009
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1057
 msgid "Send report"
 msgstr "Bericht senden"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1014
-msgid "Settings"
-msgstr "Einstellungen"
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1173
+msgid "RE_Kenshi Menu"
+msgstr "RE_Kenshi Hauptmenü"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1021
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1190
+msgid "General"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1193
+msgid "Gameplay"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1197
+msgid "Performance"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1200
+msgid "Debug log"
+msgstr "Debugprotokoll"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1237
 msgid "Report bug"
 msgstr "Fehler melden"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1032
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1244
 msgid "Automatically check for updates"
 msgstr "Automatisch nach Updates suchen"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1039
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1248
 msgid "Open RE_Kenshi settings on startup"
 msgstr "RE_Kenshi Einstellungen beim Start öffnen"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1046
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1254
 msgid "Fix Kenshi's RNG bug"
 msgstr "Kenshis RNG-Bug Beheben"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1053
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1258
 msgid "Increase max camera distance"
 msgstr "Maximale Kameradistanz erhöhen"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1060
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1275
+msgid "Attack slots ("
+msgstr "Angriffslots ("
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1299
+msgid "Max. faction size ("
+msgstr "Maximale Fraktionsgröße ("
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1325
+msgid "Max. squad size ("
+msgstr "Maximale Gruppengröße ("
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1351
+msgid "Max. squads ("
+msgstr "Maximale Gruppen ("
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1364
+msgid "Use custom game speed controls"
+msgstr "Benutzerdefinierte Spielgeschwindigkeiten"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1385
+msgid "Game speeds"
+msgstr "Spielgeschwindigkeiten"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1390
+msgid "Add game speed"
+msgstr "Spielgeschwindigkeit hinzufügen"
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1405
 msgid "Cache shaders"
 msgstr "Shader in den Cachespeicher aufnehmen"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1067
-msgid "Log file IO"
-msgstr "Datei I/O protokollieren"
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1409
+msgid "[Experimental]"
+msgstr ""
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1074
-msgid "Log audio IDs/events/switches/states"
-msgstr "Audio-IDs/Ereignissen/Switches/States protokollieren"
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1409
+msgid "Skip unused mipmap reads"
+msgstr ""
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1082
-msgid "To enable, reinstall RE_Kenshi and check \"Compress Heightmap\""
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1414
+msgid ""
+"Fast uncompressed heightmap should be faster on SSDs\n"
+"Compressed heightmap should be faster on HDDs"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1426
+#, fuzzy
+#| msgid "To enable, reinstall RE_Kenshi and check \"Compress Heightmap\""
+msgid ""
+"To enable compressed heightmap, reinstall RE_Kenshi and check \"Compress "
+"Heightmap\""
 msgstr ""
 "Zum Aktivieren, installiere RE_Kenshi erneut und wähle \"Heightmap "
 "komprimieren\" aus"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1088
-msgid "[TOGGLE MAY CRASH] Use compressed heightmap"
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1437
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1439
+msgid "[RECOMMENDED] "
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1441
+msgid "[UNAVAILABLE] "
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1443
+msgid "Use vanilla heightmap implementation"
+msgstr ""
+
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1444
+#, fuzzy
+#| msgid "[TOGGLE MAY CRASH] Use compressed heightmap"
+msgid "Use compressed heightmap"
 msgstr "[UMSCHALTEN KANN ZUM AMSTURZ FÜHREN] Komprimierte Heightmap verwenden"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1114
-msgid "Attack slots ("
-msgstr "Angriffslots ("
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1445
+#, fuzzy
+#| msgid "[TOGGLE MAY CRASH] Use compressed heightmap"
+msgid "Use fast uncompressed heightmap"
+msgstr "[UMSCHALTEN KANN ZUM AMSTURZ FÜHREN] Komprimierte Heightmap verwenden"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1137
-msgid "Max. faction size ("
-msgstr "Maximale Fraktionsgröße ("
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1462
+msgid "Log file IO"
+msgstr "Datei I/O protokollieren"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1162
-msgid "Max. squad size ("
-msgstr "Maximale Gruppengröße ("
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1466
+msgid "Log audio IDs/events/switches/states"
+msgstr "Audio-IDs/Ereignissen/Switches/States protokollieren"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1187
-msgid "Max. squads ("
-msgstr "Maximale Gruppen ("
-
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1198
-msgid "Use custom game speed controls"
-msgstr "Benutzerdefinierte Spielgeschwindigkeiten"
-
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1207
-msgid "Game speeds"
-msgstr "Spielgeschwindigkeiten"
-
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1209
-msgid "Add game speed"
-msgstr "Spielgeschwindigkeit hinzufügen"
-
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1215
-msgid "Debug log"
-msgstr "Debugprotokoll"
-
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1300
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1510
 msgid "RE_Kenshi settings"
 msgstr "RE_Kenshi Einstellungen"
 
-#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1522
+#: ..\..\RE_Kenshi_release_temp\dllmain.cpp:1695
 msgid " - [NOT SUPPORTED, MOD DISABLED]"
 msgstr " - [NICHT UNTERSTÜTZT, RE_KENSHI DEAKTIVIERT]"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:180
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:215
 msgid "Describe what caused the crash..."
 msgstr "Beschreibe, was den Absturz verursacht hat..."
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:234
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:275
 msgid "Kenshi has crashed."
 msgstr "Kenshi ist abgestürzt."
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:235
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:276
 msgid ""
 "\n"
 "Would you like to send a crash report to the RE_Kenshi team?"
@@ -236,7 +289,7 @@ msgstr ""
 "\n"
 "Möchten Sie ein Absturzbericht an das RE_Kenshi-Team senden?"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:236
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:277
 msgid ""
 "\n"
 "Your report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with "
@@ -246,7 +299,7 @@ msgstr ""
 "Ihr Bericht wird dem Entwickler von RE_Kenshi (BFrizzleFoShizzle) mit den "
 "folgenden Informationen gesendet:"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:237
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:278
 msgid ""
 "\n"
 "\n"
@@ -256,7 +309,15 @@ msgstr ""
 "\n"
 "RE_Kenshi Version: "
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:240
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:281
+#, fuzzy
+#| msgid "RE_Kenshi settings"
+msgid ""
+"\n"
+"RE_Kenshi settings"
+msgstr "RE_Kenshi Einstellungen"
+
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:282
 msgid ""
 "\n"
 "RE_Kenshi's log"
@@ -264,7 +325,7 @@ msgstr ""
 "\n"
 "RE_Kenshi Protokoll"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:249
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:291
 msgid ""
 "\n"
 "Kenshi's crashdump ("
@@ -272,77 +333,77 @@ msgstr ""
 "\n"
 "Kenshi Crashdump ("
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:264
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:306
 msgid "Send"
 msgstr "Senden"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:266
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:308
 msgid "Don't send"
 msgstr "Nicht senden"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:423
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:438
 msgid "RE_Kenshi Crash Reporter"
 msgstr "RE_Kenshi Absturzberichterstatter"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:439
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:454
 msgid "Crash report sent successfully"
 msgstr "Absturzbericht erfolgreich gesendet"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:439
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:454
 msgid "Success"
 msgstr "Erfolg"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:441
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:456
 msgid "Crash report failed to send"
 msgstr "Absturzbericht konnte nicht gesendet werden"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:441
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:456
 msgid "Error"
 msgstr "Fehler"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:465
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:573
 msgid "Kenshi is probably crashing."
 msgstr "Kenshi stürzt wahrscheinlich ab."
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:466
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:574
 msgid "Do you want to force Kenshi to save before it crashes?"
 msgstr "Möchtest du Kenshi dazu zwingen, vor dem Absturz zu speichern?"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:466
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:574
 msgid "RE_Kenshi crash handler"
 msgstr "RE_Kenshi Absturz-Manager"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:506
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:614
 msgid "The game has saved successfully and will now crash."
 msgstr "Das Spiel wurde erfolgreich gespeichert und wird nun abstürzen."
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:506
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:614
 msgid "Save success"
 msgstr "Speichern erfolgreich"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:511
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:619
 msgid "Error creating save file."
 msgstr "Fehler beim Erstellen der Speicherdatei."
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:511
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:517
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:523
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:619
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:625
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:631
 msgid "Save failed"
 msgstr "Speichern fehlgeschlagen"
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:517
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:625
 msgid "Error finding unused emergency save slot."
 msgstr "Fehler beim Finden eines unbenutzten Notfall-Speicherplatzes."
 
-#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:523
+#: ..\..\RE_Kenshi_release_temp\Bugs.cpp:631
 msgid "An unspecified error occurred while saving."
 msgstr "Ein undefiniter Fehler ist beim Speicher aufgetreten."
 
-#: ..\..\RE_Kenshi_release_temp\Version.cpp:107
+#: ..\..\RE_Kenshi_release_temp\Version.cpp:119
 msgid "A new version of RE_Kenshi ("
 msgstr "Eine neue Version vom RE_Kenshi ("
 
-#: ..\..\RE_Kenshi_release_temp\Version.cpp:107
+#: ..\..\RE_Kenshi_release_temp\Version.cpp:119
 msgid ""
 ") has been released.\n"
 "Do you want to update?"
@@ -350,17 +411,17 @@ msgstr ""
 ") wurden veröffentlicht.\n"
 "Möchtest du aktualisieren?"
 
-#: ..\..\RE_Kenshi_release_temp\Version.cpp:108
-#: ..\..\RE_Kenshi_release_temp\Version.cpp:117
-#: ..\..\RE_Kenshi_release_temp\Version.cpp:121
+#: ..\..\RE_Kenshi_release_temp\Version.cpp:120
+#: ..\..\RE_Kenshi_release_temp\Version.cpp:129
+#: ..\..\RE_Kenshi_release_temp\Version.cpp:133
 msgid "RE_Kenshi update"
 msgstr "RE_Kenshi Aktualisierung"
 
-#: ..\..\RE_Kenshi_release_temp\Version.cpp:116
+#: ..\..\RE_Kenshi_release_temp\Version.cpp:128
 msgid "Do you want to skip RE_Kenshi release "
 msgstr "Möchtest du die Veröffentlichung von RE_Kenshi überspringen "
 
-#: ..\..\RE_Kenshi_release_temp\Version.cpp:116
+#: ..\..\RE_Kenshi_release_temp\Version.cpp:128
 msgid ""
 "?\n"
 "(disables notifications for this release)"
@@ -368,6 +429,9 @@ msgstr ""
 "?\n"
 "(Deaktiviert Benachrichtigungen für diese Version)"
 
-#: ..\..\RE_Kenshi_release_temp\Version.cpp:121
+#: ..\..\RE_Kenshi_release_temp\Version.cpp:133
 msgid "Version skipped!"
 msgstr "Version übersprungen!"
+
+#~ msgid "Settings"
+#~ msgstr "Einstellungen"
