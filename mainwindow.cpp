@@ -28,7 +28,8 @@ std::vector<QString> requiredFiles = {"install/RE_kenshi.dll",
 						  "translations/qt_ja.qm",
 						  "translations/RE_Kenshi_de.qm",
 						  "translations/RE_Kenshi_ru.qm",
-						  "translations/RE_Kenshi_ja.qm"};
+						  "translations/RE_Kenshi_ja.qm",
+						  "translations/RE_Kenshi_fr.qm"};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -44,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui->comboBox->addItem("Deutsch", "de");
 	ui->comboBox->addItem("Русский", "ru");
 	ui->comboBox->addItem("日本語", "ja");
+	ui->comboBox->addItem("Français", "fr");
 	if(ui->comboBox->findData(language) != -1)
 		ui->comboBox->setCurrentIndex(ui->comboBox->findData(language));
 
