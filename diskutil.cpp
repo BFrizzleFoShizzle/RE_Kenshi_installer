@@ -4,6 +4,12 @@
 
 #include "Release_Assert.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <shobjidl.h>
+
+#include <shlguid.h>
+
 // Adapted from https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
 std::string exec(std::string cmd) {
     char buffer[128];
@@ -59,4 +65,42 @@ bool DiskUtil::IsOnHDD(std::string filePath)
         return true;
 
     return false;
+}
+
+bool DiskUtil::CreateShortcut(std::string writePath, std::wstring cwd, std::wstring target)
+{
+	HRESULT hres;
+	IShellLink* psl;
+
+	// Get a pointer to the IShellLink interface. It is assumed that CoInitialize
+	// has already been called.
+	hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl);
+	if (SUCCEEDED(hres))
+	{
+		IPersistFile* ppf;
+
+		// Set the path to the shortcut target and add the description.
+		psl->SetPath(target.c_str());
+		psl->SetWorkingDirectory(cwd.c_str());
+
+		// Query IShellLink for the IPersistFile interface, used for saving the
+		// shortcut in persistent storage.
+		hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
+
+		if (SUCCEEDED(hres))
+		{
+			WCHAR wsz[MAX_PATH];
+
+			// Ensure that the string is Unicode.
+			MultiByteToWideChar(CP_ACP, 0, writePath.c_str(), -1, wsz, MAX_PATH);
+
+			// Save the link by calling IPersistFile::Save.
+			hres = ppf->Save(wsz, TRUE);
+			if(hres == S_OK)
+				return true;
+			ppf->Release();
+		}
+		psl->Release();
+	}
+	return false;
 }

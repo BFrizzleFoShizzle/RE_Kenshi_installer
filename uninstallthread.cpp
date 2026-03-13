@@ -369,6 +369,50 @@ void UninstallThread::run()
 			// soft error - continue
 			emit log(QString("executable doesn't exist at ") + executablePath);
 		}
+
+		/// Remove executable 2
+		executablePath = kenshiDir + "RE_Kenshi/Kenshi_x64.exe";
+		if(FileExists(executablePath))
+		{
+			statusUpdate(tr("Old files restored. Removing executable..."));
+			try
+			{
+				DeleteFile(executablePath);
+				emit log("executable deleted successfully");
+			}
+			catch(std::exception e)
+			{
+				// soft error - continue
+				emit log(QString("executable exists but could not be deleted ") + e.what());
+			}
+		}
+		else
+		{
+			// soft error - continue
+			emit log(QString("executable doesn't exist at ") + executablePath);
+		}
+
+		/// Remove executable 3
+		executablePath = kenshiDir + "RE_Kenshi/Kenshi_GOG_x64.exe";
+		if(FileExists(executablePath))
+		{
+			statusUpdate(tr("Old files restored. Removing executable..."));
+			try
+			{
+				DeleteFile(executablePath);
+				emit log("executable deleted successfully");
+			}
+			catch(std::exception e)
+			{
+				// soft error - continue
+				emit log(QString("executable exists but could not be deleted ") + e.what());
+			}
+		}
+		else
+		{
+			// soft error - continue
+			emit log(QString("executable doesn't exist at ") + executablePath);
+		}
 		progressUpdate(GetUninstallPercent(DELETE_EXECUTABLE));
 
 		// success

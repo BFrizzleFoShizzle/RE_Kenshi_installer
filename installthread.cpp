@@ -4,6 +4,8 @@
 
 #include "config.h"
 
+#include "diskutil.h"
+
 #include <QFileInfo>
 #include <QDir>
 #include <QEventLoop>
@@ -296,22 +298,30 @@ void InstallThread::run()
 			QString patchFile = QFileInfo(options.kenshiExePath).fileName() + ".patch";
 
 			statusUpdate(tr("Downgrading executable..."));
-			std::string command = (".\\tools\\courgette64.exe -apply \"" + options.kenshiExePath + "\" ./tools/" + patchFile + " \"" + kenshiDir + "/RE_Kenshi.exe\"").toStdString();
+			std::string command = (".\\tools\\courgette64.exe -apply \"" + options.kenshiExePath + "\" ./tools/" + patchFile + " \"" + kenshiDir
+								   + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName() + "\"").toStdString();
 			emit log(QString::fromStdString(shellExec(command)));
+			if(!FileExists(kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName()))
+			{
+				reportBug(GAME_DOWNGRADE, QString("Could not generate downgraded executable."));
+				statusUpdate(tr("Could not generate downgraded executable."));
+				emit resultError(true);
+				return;
+			}
 
 			progressUpdate(GetInstallPercent(GAME_DOWNGRADE));
 
 			statusUpdate(tr("Creating shortcuts..."));
-			QFile newExecutable(kenshiDir + "/RE_Kenshi.exe");
+			QFile newExecutable(kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName());
 			if(options.createDesktopShortcut)
 			{
 				QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-				newExecutable.link(desktopPath+"/RE_Kenshi.lnk");
+				DiskUtil::CreateShortcut((desktopPath+"/RE_Kenshi.lnk").toStdString(), kenshiDir.toStdWString(), (kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName()).toStdWString());
 			}
 			if(options.createStartShortcut)
 			{
 				QString startPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
-				newExecutable.link(startPath+"/RE_Kenshi.lnk");
+				DiskUtil::CreateShortcut((startPath+"/RE_Kenshi.lnk").toStdString(), kenshiDir.toStdWString(), (kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName()).toStdWString());
 			}
 		}
 

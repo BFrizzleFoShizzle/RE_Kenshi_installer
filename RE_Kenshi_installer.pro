@@ -58,7 +58,7 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-unix|win32: LIBS += -L$$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/Lib/x64/' -lAdvAPI32
+unix|win32: LIBS += -L$$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/Lib/x64/' -lAdvAPI32 -lOle32
 
 INCLUDEPATH += $$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/Lib/x64'
 DEPENDPATH += $$PWD/'../../../../../Program Files/Microsoft SDKs/Windows/v7.1/Lib/x64'
