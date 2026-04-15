@@ -100,34 +100,23 @@ void UninstallThread::run()
 			QString pluginFilePath = kenshiDir + "Plugins_x64.cfg";
 			try
 			{
-				if(FileExists(pluginFilePath))
-				{
-					QFile pluginConfigFile(pluginFilePath);
-					pluginConfigFile.open(QFile::ReadOnly);
-					QByteArray fileBytes = pluginConfigFile.readAll();
-					pluginConfigFile.close();
-					const char* removeString = "\nPlugin=RE_Kenshi\n";
-					int removeOffset = fileBytes.indexOf(removeString);
-					if(removeOffset == -1)
-					{
-						emit log("RE_Kenshi already disabled in plugins");
-					}
-					else
-					{
-						fileBytes.remove(removeOffset, strlen(removeString));
-						QFile outFile(pluginFilePath);
-						outFile.open(QFile::OpenModeFlag::WriteOnly);
-						outFile.write(fileBytes);
-						outFile.close();
-						emit log("Plugin config update success");
-					}
-				}
-				else
-				{
-					statusUpdate(tr("Could not find Kenshi plugin config at ") + pluginFilePath);
-					emit resultError(true);
-					return;
-				}
+
+				std::string configText = "";
+				configText += "# Defines plugins to load\n";
+				configText += "\n";
+				configText += "# Define plugin folder\n";
+				configText += "PluginFolder=.\\\n";
+				configText += "\n";
+				configText += "# Define plugins\n";
+				configText += "Plugin=RenderSystem_Direct3D11_x64\n";
+				configText += "Plugin=Plugin_ParticleUniverse_x64\n";
+				configText += "Plugin=Plugin_Terrain_x64\n";
+
+				QFile outFile(pluginFilePath);
+				outFile.open(QFile::WriteOnly);
+				outFile.write(configText.c_str());
+				outFile.close();
+				emit log("Plugin config update success");
 			}
 			catch(std::exception e)
 			{

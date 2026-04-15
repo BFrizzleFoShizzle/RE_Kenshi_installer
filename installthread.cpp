@@ -334,22 +334,24 @@ void InstallThread::run()
 		{
 			if(FileExists(pluginFilePath))
 			{
-				QFile pluginConfigFile(pluginFilePath);
-				pluginConfigFile.open(QFile::ReadOnly);
-				QByteArray fileBytes = pluginConfigFile.readAll();
-				pluginConfigFile.close();
-				if(fileBytes.contains("\nPlugin=RE_Kenshi"))
-				{
-					emit log("RE_Kenshi already enabled in plugins");
-				}
-				else
-				{
-					QFile outFile(pluginFilePath);
-					outFile.open(QFile::OpenModeFlag::Append);
-					outFile.write("\nPlugin=RE_Kenshi\n");
-					outFile.close();
-					emit log("Plugin config update success");
-				}
+				std::string configText = "";
+				configText += "# Defines plugins to load\n";
+				configText += "\n";
+				configText += "# Define plugin folder\n";
+				configText += "PluginFolder=.\\\n";
+				configText += "\n";
+				configText += "# Define plugins\n";
+				// RE_Kenshi should be first plugin loaded
+				configText += "Plugin=RE_Kenshi\n";
+				configText += "Plugin=RenderSystem_Direct3D11_x64\n";
+				configText += "Plugin=Plugin_ParticleUniverse_x64\n";
+				configText += "Plugin=Plugin_Terrain_x64\n";
+
+				QFile outFile(pluginFilePath);
+				outFile.open(QFile::WriteOnly);
+				outFile.write(configText.c_str());
+				outFile.close();
+				emit log("Plugin config update success");
 			}
 			else
 			{

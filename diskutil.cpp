@@ -9,6 +9,7 @@
 #include <shobjidl.h>
 
 #include <shlguid.h>
+#include <bugs.h>
 
 // Adapted from https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
 std::string exec(std::string cmd) {
@@ -72,35 +73,56 @@ bool DiskUtil::CreateShortcut(std::string writePath, std::wstring cwd, std::wstr
 	HRESULT hres;
 	IShellLink* psl;
 
-	// Get a pointer to the IShellLink interface. It is assumed that CoInitialize
-	// has already been called.
-	hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl);
-	if (SUCCEEDED(hres))
+	hres = CoInitialize(NULL);
+	if(hres == S_OK || hres == S_FALSE)
 	{
-		IPersistFile* ppf;
-
-		// Set the path to the shortcut target and add the description.
-		psl->SetPath(target.c_str());
-		psl->SetWorkingDirectory(cwd.c_str());
-
-		// Query IShellLink for the IPersistFile interface, used for saving the
-		// shortcut in persistent storage.
-		hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
-
+		// Get a pointer to the IShellLink interface
+		hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl);
 		if (SUCCEEDED(hres))
 		{
-			WCHAR wsz[MAX_PATH];
+			IPersistFile* ppf;
 
-			// Ensure that the string is Unicode.
-			MultiByteToWideChar(CP_ACP, 0, writePath.c_str(), -1, wsz, MAX_PATH);
+			// Set the path to the shortcut target and add the description.
+			psl->SetPath(target.c_str());
+			psl->SetWorkingDirectory(cwd.c_str());
 
-			// Save the link by calling IPersistFile::Save.
-			hres = ppf->Save(wsz, TRUE);
-			if(hres == S_OK)
-				return true;
-			ppf->Release();
+			// Query IShellLink for the IPersistFile interface, used for saving the
+			// shortcut in persistent storage.
+			hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
+
+			if (SUCCEEDED(hres))
+			{
+				WCHAR wsz[MAX_PATH];
+
+				// Ensure that the string is Unicode.
+				MultiByteToWideChar(CP_ACP, 0, writePath.c_str(), -1, wsz, MAX_PATH);
+
+				// Save the link by calling IPersistFile::Save.
+				hres = ppf->Save(wsz, TRUE);
+				if(!SUCCEEDED(hres))
+					Bugs::ReportBug("CreateShortcut_" + std::to_string(hres), 4, "Save failed");
+
+				// cleanup
+				ppf->Release();
+			}
+			else
+			{
+
+				Bugs::ReportBug("CreateShortcut_" + std::to_string(hres), 3, "QueryInterface failed");
+			}
+			psl->Release();
 		}
-		psl->Release();
+		else
+		{
+			Bugs::ReportBug("CreateShortcut_" + std::to_string(hres), 2, "CoCreateInstance failed");
+		}
+		// CoUninitialize must be called in both S_OK and S_FALSE
+		CoUninitialize();
 	}
-	return false;
+	else
+	{
+		Bugs::ReportBug("CreateShortcut_" + std::to_string(hres), 1, "CoInitialize failed");
+	}
+
+	return hres == S_OK;
 }
