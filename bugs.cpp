@@ -21,7 +21,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-std::string installerVersion = "0.6";
+std::string installerVersion = "0.9";
 
 static std::string GetUUID()
 {
