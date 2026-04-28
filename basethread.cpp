@@ -90,23 +90,23 @@ void BaseThread::CopyFile(QString destPath, QString sourcePath)
 
 	// QFile.rename() is unsafe to use if crossing a partition, so we just do everything manually
 	// this works if the file already exists
-	std::ifstream source(sourcePath.toStdString(), std::ios::binary);
-	std::ofstream dest(destPath.toStdString(), std::ios::binary);
+	std::ifstream source(sourcePath.toStdWString(), std::ios::binary);
+	std::ofstream dest(destPath.toStdWString(), std::ios::binary);
 	while(!source.is_open() || !dest.is_open())
 	{
-		if(!source.is_open() && IsFileLocked(sourcePath.toStdString()))
+		if(!source.is_open() && IsFileLocked(sourcePath.toStdWString()))
 		{
 			if(!ShowFileLockedError(sourcePath))
 				throw CancelException();
 
-			source.open(sourcePath.toStdString(), std::ios::binary);
+			source.open(sourcePath.toStdWString(), std::ios::binary);
 		}
-		else if (!dest.is_open() && IsFileLocked(destPath.toStdString()))
+		else if (!dest.is_open() && IsFileLocked(destPath.toStdWString()))
 		{
 			if(!ShowFileLockedError(destPath))
 				throw CancelException();
 
-			dest.open(destPath.toStdString(), std::ios::binary);
+			dest.open(destPath.toStdWString(), std::ios::binary);
 		}
 		else
 		{
@@ -157,7 +157,7 @@ void BaseThread::DeleteFile(QString path)
 	if(!QFile::exists(path))
 		throw SourceFileMissingException();
 
-	while(IsFileLocked(path.toStdString()))
+	while(IsFileLocked(path.toStdWString()))
 	{
 		if(!ShowFileLockedError(path))
 			throw FileInUseException();

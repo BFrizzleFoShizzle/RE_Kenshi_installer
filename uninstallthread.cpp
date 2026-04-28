@@ -47,7 +47,7 @@ void UninstallThread::run()
 		/// double-check hash
 		statusUpdate(tr("Double-checking hash..."));
 		QString exePath = options.kenshiExePath;
-		std::ifstream exeFile(exePath.toStdString(), std::ios::ate | std::ios::binary);
+		std::ifstream exeFile(exePath.toStdWString(), std::ios::ate | std::ios::binary);
 		std::string exeHash;
 		if(exeFile.is_open())
 		{

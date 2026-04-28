@@ -39,10 +39,10 @@ enum InstallStep
 };
 
 // Adapted from https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
-static std::string shellExec(std::string cmd) {
+static std::string shellExec(std::wstring cmd) {
 	char buffer[128];
 	std::string result = "";
-	FILE* pipe = _popen(cmd.c_str(), "r");
+	FILE* pipe = _wpopen(cmd.c_str(), L"r");
 	if (!pipe)
 		return "POPEN_ERROR";
 	try {
@@ -115,7 +115,7 @@ void InstallThread::run()
 		/// double-check hash
 		statusUpdate(tr("Double-checking hash..."));
 		QString exePath = options.kenshiExePath;
-		std::ifstream exeFile(exePath.toStdString(), std::ios::ate | std::ios::binary);
+		std::ifstream exeFile(exePath.toStdWString(), std::ios::ate | std::ios::binary);
 		std::string exeHash;
 		if(exeFile.is_open())
 		{
@@ -298,8 +298,8 @@ void InstallThread::run()
 			QString patchFile = QFileInfo(options.kenshiExePath).fileName() + ".patch";
 
 			statusUpdate(tr("Downgrading executable..."));
-			std::string command = (".\\tools\\courgette64.exe -apply \"" + options.kenshiExePath + "\" ./tools/" + patchFile + " \"" + kenshiDir
-								   + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName() + "\"").toStdString();
+			std::wstring command = (".\\tools\\courgette64.exe -apply \"" + options.kenshiExePath + "\" ./tools/" + patchFile + " \"" + kenshiDir
+								   + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName() + "\"").toStdWString();
 			emit log(QString::fromStdString(shellExec(command)));
 			if(!FileExists(kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName()))
 			{
@@ -316,12 +316,12 @@ void InstallThread::run()
 			if(options.createDesktopShortcut)
 			{
 				QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-				DiskUtil::CreateShortcut((desktopPath+"/RE_Kenshi.lnk").toStdString(), kenshiDir.toStdWString(), (kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName()).toStdWString());
+				DiskUtil::CreateShortcut((desktopPath+"/RE_Kenshi.lnk").toStdWString(), kenshiDir.toStdWString(), (kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName()).toStdWString());
 			}
 			if(options.createStartShortcut)
 			{
 				QString startPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
-				DiskUtil::CreateShortcut((startPath+"/RE_Kenshi.lnk").toStdString(), kenshiDir.toStdWString(), (kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName()).toStdWString());
+				DiskUtil::CreateShortcut((startPath+"/RE_Kenshi.lnk").toStdWString(), kenshiDir.toStdWString(), (kenshiDir + "/RE_Kenshi/" + QFileInfo(options.kenshiExePath).fileName()).toStdWString());
 			}
 		}
 

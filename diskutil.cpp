@@ -68,7 +68,7 @@ bool DiskUtil::IsOnHDD(std::string filePath)
     return false;
 }
 
-bool DiskUtil::CreateShortcut(std::string writePath, std::wstring cwd, std::wstring target)
+bool DiskUtil::CreateShortcut(std::wstring writePath, std::wstring cwd, std::wstring target)
 {
 	HRESULT hres;
 	IShellLink* psl;
@@ -92,15 +92,12 @@ bool DiskUtil::CreateShortcut(std::string writePath, std::wstring cwd, std::wstr
 
 			if (SUCCEEDED(hres))
 			{
-				WCHAR wsz[MAX_PATH];
-
-				// Ensure that the string is Unicode.
-				MultiByteToWideChar(CP_ACP, 0, writePath.c_str(), -1, wsz, MAX_PATH);
-
 				// Save the link by calling IPersistFile::Save.
-				hres = ppf->Save(wsz, TRUE);
+				hres = ppf->Save(writePath.c_str(), TRUE);
+
+				// HACK this sometimes fails, need to figure out why
 				if(!SUCCEEDED(hres))
-					Bugs::ReportBug("CreateShortcut_" + std::to_string(hres), 4, "Save failed");
+					Bugs::ReportBug("CreateShortcut_" + QString::number(hres, 16).toStdString(), 4, "Save failed");
 
 				// cleanup
 				ppf->Release();
@@ -108,20 +105,20 @@ bool DiskUtil::CreateShortcut(std::string writePath, std::wstring cwd, std::wstr
 			else
 			{
 
-				Bugs::ReportBug("CreateShortcut_" + std::to_string(hres), 3, "QueryInterface failed");
+				Bugs::ReportBug("CreateShortcut_" + QString::number(hres, 16).toStdString(), 3, "QueryInterface failed");
 			}
 			psl->Release();
 		}
 		else
 		{
-			Bugs::ReportBug("CreateShortcut_" + std::to_string(hres), 2, "CoCreateInstance failed");
+			Bugs::ReportBug("CreateShortcut_" + QString::number(hres, 16).toStdString(), 2, "CoCreateInstance failed");
 		}
 		// CoUninitialize must be called in both S_OK and S_FALSE
 		CoUninitialize();
 	}
 	else
 	{
-		Bugs::ReportBug("CreateShortcut_" + std::to_string(hres), 1, "CoInitialize failed");
+		Bugs::ReportBug("CreateShortcut_" + QString::number(hres, 16).toStdString(), 1, "CoInitialize failed");
 	}
 
 	return hres == S_OK;

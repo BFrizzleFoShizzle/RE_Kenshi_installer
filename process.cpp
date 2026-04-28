@@ -38,10 +38,9 @@ void ReportError(std::string step)
 }
 
 // taken from https://stackoverflow.com/questions/31137840/how-to-check-if-a-file-is-being-used-by-another-application
-bool IsFileLocked(const std::string fileName)
+bool IsFileLocked(const std::wstring fileName)
 {
-	std::wstring wfileName(fileName.begin(), fileName.end());
-	const wchar_t* PathName = wfileName.c_str();
+	const wchar_t* PathName = fileName.c_str();
 	bool isFileLocked = false;
 
 	DWORD dwSession = 0x0;

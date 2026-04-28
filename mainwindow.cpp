@@ -163,12 +163,12 @@ void MainWindow::on_kenshiDirText_textChanged(const QString &arg1)
 {
     ui->uninstallButton->setEnabled(false);
     ui->nextButton->setEnabled(false);
-    std::ifstream kenshiExe(arg1.toStdString(), std::ios::ate | std::ios::binary);
+	std::ifstream kenshiExe(arg1.toStdWString(), std::ios::ate | std::ios::binary);
     if(kenshiExe.is_open())
     {
         ui->outputLabel->setText(tr("Checking file hash..."));
 
-        HashThread *hashThread = new HashThread(arg1.toStdString(), this);
+		HashThread *hashThread = new HashThread(arg1.toStdWString(), this);
         // Hopefully stops ToCTToU race condition if you modify the path while hashes are being calculated
         ui->kenshiDirButton->setEnabled(false);
         ui->kenshiDirText->setEnabled(false);
@@ -198,7 +198,7 @@ bool IsModInstalled(QString kenshiEXEHash, QString kenshiEXEPath)
 
 	// if enabled in config or DLL exists, mod is installed
 	QString kenshiDir = kenshiEXEPath.toLower().split("kenshi_gog_x64.exe")[0].split("kenshi_x64.exe")[0];
-	std::string dllPath = kenshiDir.toStdString() + "RE_Kenshi.dll";
+	std::wstring dllPath = kenshiDir.toStdWString() + L"RE_Kenshi.dll";
     std::ifstream dllFile(dllPath);
 
 	QString pluginFilePath = kenshiDir + "Plugins_x64.cfg";

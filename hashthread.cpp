@@ -30,7 +30,7 @@ bool HashThread::HashIsModded(std::string hash)
     return hash == moddedKenshiSteamHash;
 }
 
-HashThread::HashThread(std::string file, QWidget *parent)
+HashThread::HashThread(std::wstring file, QWidget *parent)
     : QThread(parent)
 {
     this->filePath = file;

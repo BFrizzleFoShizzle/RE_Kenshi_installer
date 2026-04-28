@@ -8,7 +8,7 @@ namespace DiskUtil
     std::string GetMediaType(std::string filePath);
     bool IsOnSSD(std::string filePath);
     bool IsOnHDD(std::string filePath);
-	bool CreateShortcut(std::string writePath, std::wstring cwd, std::wstring target);
+	bool CreateShortcut(std::wstring writePath, std::wstring cwd, std::wstring target);
 }
 
 #endif // DISKUTIL_H

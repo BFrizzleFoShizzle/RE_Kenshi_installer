@@ -9,12 +9,12 @@ class HashThread : public QThread
 public:
     static bool HashSupported(std::string hash);
     static bool HashIsModded(std::string hash);
-    HashThread(std::string file, QWidget *parent = nullptr);
+	HashThread(std::wstring file, QWidget *parent = nullptr);
     void run() override;
 signals:
     void resultSuccess(const QString &s);
     void resultError(const QString &s);
 private:
-    std::string filePath;
+	std::wstring filePath;
 };
 #endif // HASHTHREAD_H

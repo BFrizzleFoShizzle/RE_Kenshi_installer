@@ -4,6 +4,6 @@
 
 bool IsProcessRunning(std::wstring processName);
 
-bool IsFileLocked(const std::string fileName);
+bool IsFileLocked(const std::wstring fileName);
 
 #endif // PROCESS_H
