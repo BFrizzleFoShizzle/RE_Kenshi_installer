@@ -21,7 +21,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-std::string installerVersion = "0.9";
+std::string installerVersion = "0.12";
 
 static std::string GetUUID()
 {
@@ -116,8 +116,7 @@ void Bugs::ReportBug(std::string window, int step, std::string error, std::strin
 		+ "\nStep: " + std::to_string(step) + "\nError message:\n" + error);
 
 	QJsonObject obj;
-	obj["content"] = QString::fromStdString("<@" + discordID + ">")
-			+  "\n```" + message + "```";
+	obj["content"] = QString::fromStdString("```") + message + "```";
 
 	QHttpPart textPart;
 	textPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"payload_json\""));
