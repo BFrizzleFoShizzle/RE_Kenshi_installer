@@ -95,6 +95,12 @@ MainWindow::MainWindow(QWidget *parent)
 					defaultPath = testPath;
 			}
 		}
+		// Proton fix
+		if(defaultPath.startsWith("/") && QFile::exists("Z:" + defaultPath))
+		{
+			defaultPath = "Z:" + defaultPath;
+		}
+
 	}
 	catch(...)
 	{
@@ -163,6 +169,17 @@ void MainWindow::on_kenshiDirText_textChanged(const QString &arg1)
 {
     ui->uninstallButton->setEnabled(false);
     ui->nextButton->setEnabled(false);
+	if(arg1.startsWith("/"))
+	{
+		QMessageBox errorMessage(this);
+		errorMessage.setWindowTitle(QObject::tr("Unix-style path warning"));
+		errorMessage.setIcon(QMessageBox::Warning);
+		errorMessage.setText(QObject::tr("Unix-style paths starting with \"/\" usually break the installer.\n")
+							 + QObject::tr("If you are running the installer under Wine/Proton, you may need add Z: to the start of your path.\n")
+							 + QObject::tr("(Proton usually maps Z:/ to /)"));
+		errorMessage.setStandardButtons(QMessageBox::Ok);
+		errorMessage.exec();
+	}
 	std::ifstream kenshiExe(arg1.toStdWString(), std::ios::ate | std::ios::binary);
     if(kenshiExe.is_open())
     {
