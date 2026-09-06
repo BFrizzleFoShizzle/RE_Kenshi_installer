@@ -11,6 +11,8 @@
 #include <shlguid.h>
 #include <bugs.h>
 
+#include <QString>
+
 // Adapted from https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
 std::string exec(std::string cmd) {
     char buffer[128];
