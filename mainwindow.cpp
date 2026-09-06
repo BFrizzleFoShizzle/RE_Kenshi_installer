@@ -5,8 +5,9 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QFile>
+#include <QRegularExpression>
+
 #include <fstream>
-#include <qtranslator.h>
 
 #include "hashthread.h"
 #include "diskutil.h"
@@ -15,7 +16,7 @@
 #include "uninstallwindow.h"
 #include <qlayout.h>
 
-std::vector<QString> requiredFiles = {"install/RE_kenshi.dll",
+static std::vector<QString> requiredFiles = {"install/RE_kenshi.dll",
 						  "install/KenshiLib.dll",
 						  "install/CompressToolsLib.dll",
 						  "install/RE_Kenshi/game_speed_tutorial.png",
@@ -25,6 +26,7 @@ std::vector<QString> requiredFiles = {"install/RE_kenshi.dll",
 						  "tools/Courgette64.exe",
 						  "tools/kenshi_GOG_x64.exe.patch",
 						  "tools/kenshi_x64.exe.patch",
+						  "config.json",
 						  "translations/qt_de.qm",
 						  "translations/qt_ru.qm",
 						  "translations/qt_ja.qm",
@@ -37,19 +39,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-	QString language = QLocale::system().name().mid(0,2);
-	baseTranslator.load("./translations/qt_" + language);
-	QApplication::instance()->installTranslator(&baseTranslator);
-	mainTranslator.load("./translations/RE_Kenshi_" + language);
-	QApplication::instance()->installTranslator(&mainTranslator);
-    ui->setupUi(this);
-	ui->comboBox->addItem("English", "en");
-	ui->comboBox->addItem("Deutsch", "de");
-	ui->comboBox->addItem("Русский", "ru");
-	ui->comboBox->addItem("日本語", "ja");
-	ui->comboBox->addItem("Français", "fr");
-	if(ui->comboBox->findData(language) != -1)
-		ui->comboBox->setCurrentIndex(ui->comboBox->findData(language));
+
+	ui->setupUi(this);
 
     // Dumb workaround to create a multiline button
     QGridLayout* layout = new QGridLayout(ui->kenshiDirButton);
@@ -293,23 +284,4 @@ void MainWindow::on_uninstallButton_clicked()
 		UninstallWindow* uninstallWindow = new UninstallWindow(InstallerAction::UNINSTALL, options);
         uninstallWindow->show();
     }
-}
-
-void MainWindow::on_comboBox_currentIndexChanged(int index)
-{
-	QString language = QString(ui->comboBox->currentData().toString());
-	QApplication::instance()->removeTranslator(&baseTranslator);
-	baseTranslator.load("./translations/qt_" + language);
-	QApplication::instance()->installTranslator(&baseTranslator);
-
-	QApplication::instance()->removeTranslator(&mainTranslator);
-	mainTranslator.load("./translations/RE_Kenshi_" + language);
-	QApplication::instance()->installTranslator(&mainTranslator);
-
-    ui->retranslateUi(this);
-    // Apparently, have to do this manually...
-    ui->outputLabel->setText(tr("Please select kenshi executable"));
-    ui->kenshiDirButtonLabel->setText(tr("Find Kenshi install dir"));
-    ui->nextButton->setText(tr("Next"));
-    ui->uninstallButton->setText(tr("Uninstall"));
 }

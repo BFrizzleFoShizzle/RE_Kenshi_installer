@@ -11,6 +11,8 @@ CONFIG += c++11
 SOURCES += \
     basethread.cpp \
     bugs.cpp \
+    config.cpp \
+    consentwindow.cpp \
     diskutil.cpp \
     hashthread.cpp \
     installthread.cpp \
@@ -28,6 +30,7 @@ HEADERS += \
     basethread.h \
     bugs.h \
     config.h \
+    consentwindow.h \
     discord.h \
     diskutil.h \
     hashthread.h \
@@ -43,6 +46,7 @@ HEADERS += \
     uninstallwindow.h
 
 FORMS += \
+    consentwindow.ui \
     installwindow.ui \
     mainwindow.ui \
     optionswindow.ui
@@ -81,5 +85,8 @@ QMAKE_POST_LINK += && xcopy /Y \"$$PWD\\*.ui\" \"$$OUT_PWD\\translation\\\"
 QMAKE_POST_LINK += && xcopy /Y \"$$PWD\\*.ts\" \"$$OUT_PWD\\translation\\\"
 # delete discord info
 QMAKE_POST_LINK += && del \"$$OUT_PWD\\translation\\discord.h\"
+
+RESOURCES += \
+    conditions.qrc
 
 

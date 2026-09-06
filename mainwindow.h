@@ -37,12 +37,8 @@ private slots:
     // uninstall methods
     void on_uninstallButton_clicked();
 
-    void on_comboBox_currentIndexChanged(int index);
-
 private:
-    Ui::MainWindow *ui;
-	QTranslator mainTranslator;
-	QTranslator baseTranslator;
+	Ui::MainWindow *ui;
 	QString lastHash;
 };
 #endif // MAINWINDOW_H

@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/conditions">
+        <file alias="PRIVACY.md">conditions/PRIVACY.md</file>
+        <file alias="LICENSE">conditions/LICENSE</file>
+    </qresource>
+    <qresource lang="en" prefix="/conditions">
+        <file alias="PRIVACY.md">conditions/PRIVACY.md</file>
+    </qresource>
+</RCC>

@@ -21,7 +21,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-std::string installerVersion = "0.12";
+std::string installerVersion = "0.13";
 
 static std::string GetUUID()
 {
@@ -87,16 +87,31 @@ void Bugs::ReportBug(std::string window, int step, std::string error, std::strin
 	uuidCheckBox.setChecked(true);
 	consentBox.setIcon(QMessageBox::Critical);
 	consentBox.setWindowTitle(QObject::tr("Error"));
-	consentBox.setText(QString(QObject::tr("RE_Kenshi's installer has encountered an error"))
-					   + QObject::tr("\nWould you like to send an error report to the RE_Kenshi team?")
-					   + QObject::tr("\nYour report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) with the following information:")
-					   + "\n" + QObject::tr("\nInstaller version: ") + QString::fromStdString(installerVersion)
-					   + QObject::tr("\nWindow: ") + QString::fromStdString(window) // the name of the window - e.g. InstallerWindow, UninstallerWindow
-					   + QObject::tr("\nInstallation step: ") + QString::number(step)
-					   + QObject::tr("\nUUID hash: ") + hash + QObject::tr(" (optional - allows the developer to know all your reports come from the same machine)")
-					   + QObject::tr("\nInstall log (press \"Show Details\"  to view)")
-					   + QObject::tr("\nError message: ")
-					   + "\n" + QString::fromStdString(error) + "\n");
+	consentBox.setText(QString(QObject::tr("RE_Kenshi's installer has encountered an error.\n"
+										   "\n"
+										   "Would you like to send an error report to the RE_Kenshi team?\n"
+										   "\n"
+										   "Your report will be sent to RE_Kenshi's developer (BFrizzleFoShizzle) and stored on "
+										   "Discord's servers (located outside New Zealand). Reports are kept for up to 3 years.\n"
+										   "Full privacy policy: https://github.com/BFrizzleFoShizzle/RE_Kenshi/blob/master/PRIVACY.md\n"
+										   "\n"
+										   "The report will include:\n"
+										   "  Installer version: %0\n"
+										   "  Window: %1\n"
+										   "  Installation step: %2\n"
+										   "  UUID hash (Machine identifier, optional): %3\n"
+										   "  Install log (press \"Show Details\" to view)\n"
+										   "  Error message:\n"
+										   "  %4\n"
+										   "\n"
+										   "The checkbox below adds a hash of your machine's install ID (UUID hash: %3) to the report. This lets the "
+										   "developer link multiple reports to the same machine, and lets you reference a specific "
+										   "report later if you want it looked into. If left unchecked, the developer has no way to "
+										   "find or delete your report afterward."
+										   "\n"
+										   "\nThe install log may incidentally include file paths, your Windows username, or other"
+										   " system information recorded during installation."))
+					   .arg(QString::fromStdString(installerVersion), QString::fromStdString(window), QString::number(step), hash, QString::fromStdString(error)));
 	consentBox.setDetailedText("Installer log:\n" + QString::fromStdString(logs));
 	consentBox.setCheckBox(&uuidCheckBox);
 	consentBox.setStandardButtons(QMessageBox::Yes);

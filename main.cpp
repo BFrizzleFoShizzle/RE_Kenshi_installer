@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "consentwindow.h"
 
 #include <QApplication>
 #include <Windows.h>
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
     else
     {
         QApplication a(argc, argv);
-        MainWindow w;
-        w.show();
-        return a.exec();
+		ConsentWindow c;
+		c.show();
+		return a.exec();
     }
 }
